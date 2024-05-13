@@ -1,4 +1,5 @@
 import pygame
+from menu import pause_menu
 
 from Interface import Interface
 pygame.init()
@@ -22,7 +23,8 @@ def quit_game():
             if event.key == pygame.K_p:
                 pygame.quit()
                 exit()
-
+            elif event.key == pygame.K_ESCAPE:
+                pause_menu(window, clock)
 def main():
     
     run = True
