@@ -1,6 +1,7 @@
 import pygame
 
 from Interface import Interface
+from Audio import Audio
 pygame.init()
 
 width = 1920
@@ -12,6 +13,7 @@ pygame.display.set_caption("La Conquête Pirate")
 window = pygame.display.set_mode(win, pygame.FULLSCREEN)
 
 interface = Interface(window)
+audio = Audio()
 
 def quit_game():
     for event in pygame.event.get():
@@ -24,7 +26,6 @@ def quit_game():
                 exit()
 
 def main():
-    
     run = True
     while run:
         quit_game()
