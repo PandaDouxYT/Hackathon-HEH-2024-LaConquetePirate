@@ -1,4 +1,4 @@
-# Projet Hackathon HEH à Mons - 2024
+# Projet Hackathon HEH à Mons 2024
 Ce projet est développé dans le cadre du Hackathon organisé par la Haute École en Hainaut (HEH) à Mons. Les participants du projet sont Anthony VERGEYLEN, Guillaume DUCHESNE, Nathan ISEMBAERT ainsi que Ulrich Wilfried Nguepi Kengoum.
 
 # 1. Introduction
