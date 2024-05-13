@@ -1,6 +1,5 @@
-# Projet Hackathon HEH à Mons 2024
+# Projet Hackathon HEH à Mons - 2024
 Ce projet est développé dans le cadre du Hackathon organisé par la Haute École en Hainaut (HEH) à Mons. Les participants du projet sont Anthony VERGEYLEN, Guillaume DUCHESNE, Nathan ISEMBAERT ainsi que Ulrich Wilfried Nguepi Kengoum.
-
 
 # 1. Introduction
 **La Conquête Pirate** s'inspire du célèbre jeu *Trine*, en empruntant et adaptant ses mécaniques de jeu tout en injectant une dose de créativité et d'innovation. Le jeu propose une expérience d'action-aventure en 2D où la stratégie, la coopération, et l'exploration prennent le devant de la scène.
