@@ -21,7 +21,8 @@ class Interface:
         self.afficher_joueur_actif()
         self.afficher_barre_vie(50)
         self.afficher_nombre_piece()
-        self.afficher_nombre_experience()
+        self.afficher_nombre_experience(0)
+        self.afficher_nombre_level()
 
     def afficher_joueur_actif(self):
         """
@@ -73,7 +74,7 @@ class Interface:
         pygame.draw.rect(self.window, (0, 255, 0), (barre_vie_x, barre_vie_y, remplissage_width, barre_vie_height))
 
 
-    def afficher_nombre_piece(self):
+    def afficher_nombre_piece(self, nb_pieces=0):
         """
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
@@ -84,7 +85,7 @@ class Interface:
         coin_width = coin_img.get_width()
 
         # Création du texte
-        text = self.font.render("0", True, (255, 255, 255))
+        text = self.font.render(str(nb_pieces), True, (255, 255, 255))
         text_width = text.get_width()
         text_height = text.get_height()
 
@@ -102,19 +103,19 @@ class Interface:
         self.window.blit(coin_img, (coin_x, coin_y))
         self.window.blit(text, (text_x, text_y))
 
-    def afficher_nombre_experience(self):
+    def afficher_nombre_level(self, level=0):
         """
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
-        QUOI: Affiche le nombre d'expérience du joueur actif
+        QUOI: Affiche le niveau du joueur actif
         """
 
         # Chargement de l'image de l'expérience
-        xp_img = pygame.image.load(os.path.join("assets", "img", "xp.png"))
+        xp_img = pygame.image.load(os.path.join("assets", "img", "level.png"))
         xp_width = xp_img.get_width()
 
         # Création du texte
-        text = self.font.render("0", True, (255, 255, 255))
+        text = self.font.render(str(level), True, (255, 255, 255))
         text_width = text.get_width()
         text_height = text.get_height()
 
@@ -131,6 +132,28 @@ class Interface:
         # Dessiner l'image et le texte sur la fenêtre
         self.window.blit(xp_img, (xp_x, xp_y))
         self.window.blit(text, (text_x, text_y))
+
+    def afficher_nombre_experience(self, xp):
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 13-05-2024
+        QUOI: Affiche le nombre d'expérience du joueur actif
+        """
+
+        # Afficher l'expérience du joueur actif
+        text = self.font.render(str(xp), True, (255, 255, 255))
+        text_width = text.get_width()
+        text_height = text.get_height()
+
+        window_width = self.window.get_width()
+
+        # Positionnement du texte à 10 pixels du bord droit de la fenêtre et du haut
+        text_x = window_width - text_width - 20
+        text_y = 105
+
+        # Dessiner le texte sur la fenêtre
+        self.window.blit(text, (text_x, text_y))
+
 
     def actualiser_inventaire(self, listeObjets):
         """
