@@ -9,8 +9,9 @@ class Personnage:
         self._inventaire = []
 
     
-    def deplacer(x, y):
-        pass
+    def deplacer(self, x, y):
+        self._position = (x, y)
 
-    def attaquer(cible):
-        pass
+    def attaquer(self, cible):
+        cible._vie = cible._vie - self._degats
+        
