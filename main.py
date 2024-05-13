@@ -1,5 +1,5 @@
 import pygame
-from menu import pause_menu
+from Menu import pause_menu
 
 from Interface import Interface
 pygame.init()
