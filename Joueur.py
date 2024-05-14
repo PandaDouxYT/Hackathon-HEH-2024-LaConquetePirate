@@ -6,33 +6,17 @@ class Joueur:
         self.__niveau = niveau
         self.__xp = xp
 
-        @property
-        def get_level(self):
-            return self.__niveau
+    @property
+    def get_level(self):
+        return self.__niveau
 
-        @property
-        def get_vie(self):
-            return self.__vie
+    @property
+    def get_vie(self):
+        return self.__vie
 
-        @property
-        def get_inventaire(self):
-            return self.__inventaire
-
-        # @property
-        # def niveau(self):
-        #     return self.__niveau
-
-        # @niveau.setter
-        # def niveau(self, valeur):
-        #     self.__niveau = valeur
-
-        # @property
-        # def xp(self):
-        #     return self.__xp
-
-        # @xp.setter
-        # def xp(self, valeur):
-        #     self.__xp = valeur
+    @property
+    def get_inventaire(self):
+        return self.__inventaire
 
     def RecupererObject(self, objet):
         if(objet not in self._inventaire):
@@ -63,4 +47,3 @@ class Joueur:
 
     def ChangerPersonnage(self):
         pass
-
