@@ -5,6 +5,14 @@ from Audio import Audio
 
 class MenuPrincipal:
     def __init__(self, window):
+<<<<<<< Updated upstream
+=======
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Initialisation de la classe MenuPrincipal
+        """
+>>>>>>> Stashed changes
         self.window = window
         self.window_width, self.window_height = self.window.get_size()
         self.font = pygame.font.Font(None, 36)
@@ -32,25 +40,42 @@ class MenuPrincipal:
         self.button_margin = 5  # Margin for the black background
         self.button_spacing = 20  # Additional spacing between buttons
 
+<<<<<<< Updated upstream
         save_slots = [] # (eg. ["1", "2", "3"])
+=======
+        self.maxSaves = 3  # Maximum number of saves
+        save_slots = []  # (eg. ["1", "2", "3"])
+        if os.path.exists("saves.json"):
+            with open("saves.json", "r") as f:
+                if os.stat("saves.json").st_size == 0:
+                    with open("saves.json", "w") as f:
+                        json.dump({}, f)
+                else:
+                    save_slots = json.load(f)
+        else:
+            with open("saves.json", "w") as f:
+                json.dump({}, f)
+>>>>>>> Stashed changes
 
         # Calculate the starting y position to center all buttons
         total_button_height = (self.button_height + self.button_margin + self.button_spacing) * (2 + len(save_slots)) - self.button_spacing
         start_y = (self.window_height - total_button_height) // 2
 
         self.buttons = {
-            'play': pygame.Rect((self.window_width - self.button_width) // 2, 
-                                start_y, 
+            'play': pygame.Rect((self.window_width - self.button_width) // 2,
+                                start_y,
                                 self.button_width, self.button_height),
-            'quit': pygame.Rect((self.window_width - self.button_width) // 2, 
-                                start_y + (self.button_height + self.button_margin + self.button_spacing) * (1 + len(save_slots)), 
+            'quit': pygame.Rect((self.window_width - self.button_width) // 2,
+                                start_y + (self.button_height + self.button_margin + self.button_spacing) * (1 + len(save_slots)),
                                 self.button_width, self.button_height)
         }
         if len(save_slots) > 0:
+            # mettre dans l'odre 1, 2, 3 le dict save_slots
+            save_slots = sorted(save_slots)
             for i, slot in enumerate(save_slots):
                 self.buttons[f'load_{slot}'] = pygame.Rect(
-                    (self.window_width - self.button_width) // 2, 
-                    start_y + (self.button_height + self.button_margin + self.button_spacing) * (i + 1), 
+                    (self.window_width - self.button_width) // 2,
+                    start_y + (self.button_height + self.button_margin + self.button_spacing) * (i + 1),
                     self.button_width, self.button_height
                 )
 
@@ -64,6 +89,12 @@ class MenuPrincipal:
 
         self.button_clicked = False  # Initialize the button click state
         self.click_timer = 0  # Initialize the click timer
+
+        self.errorFont = pygame.font.Font(None, 35)  # Use SysFont to ensure regular (non-bold) font
+        self.display_error_message = False
+        self.error_message_text = self.errorFont.render('Vous avez atteint le maximum de sauvegardes. (' + str(self.maxSaves) + '/' + str(self.maxSaves) + ')', True, (255, 0, 0))
+        self.error_message_duration = 3000  # en millisecondes
+        self.error_message_start_time = 0
 
     def draw(self):
         for key, button in self.buttons.items():
@@ -80,6 +111,16 @@ class MenuPrincipal:
             # Draw text
             text_rect = self.texts[key].get_rect(center=button.center)
             self.window.blit(self.texts[key], text_rect)
+
+        # Afficher le message d'erreur si nécessaire
+        if self.display_error_message:
+            elapsed_time = pygame.time.get_ticks() - self.error_message_start_time
+            if elapsed_time < self.error_message_duration:
+                error_message_rect = self.error_message_text.get_rect(center=(self.window_width // 2, self.window_height - 160))
+                self.window.blit(self.error_message_text, error_message_rect)
+            else:
+                self.display_error_message = False
+
         pygame.display.update()
 
     def handle_events(self):
@@ -95,7 +136,14 @@ class MenuPrincipal:
                             self.button_clicked = True  # Set the flag to True when a button is clicked
                             self.click_timer = pygame.time.get_ticks()  # Record the time of the click
                             if key == 'play':
-                                return 'play'
+                                # Check if maximum saves is reached
+                                with open("saves.json", "r") as f:
+                                    currentlySaves = json.load(f)
+                                if len(currentlySaves) >= self.maxSaves:
+                                    self.display_error_message = True
+                                    self.error_message_start_time = pygame.time.get_ticks()
+                                else:
+                                    return 'play'
                             elif key == 'quit':
                                 pygame.quit()
                                 exit()
@@ -103,16 +151,28 @@ class MenuPrincipal:
                                 save_slot = key.split('_')[1]
                                 return f'load_{save_slot}'
         return None
-    
+
     def run(self):
         menu_active = True
         while menu_active:
             self.draw()
             action = self.handle_events()
             if action == 'play':
+<<<<<<< Updated upstream
                 self.audio.stopMusic()  # Stop the music before launching the interface
                 menu_active = False
                 print("Lancement du jeu...")
+=======
+                menu_active = False
+                print("Lancement du jeu...")
+
+                # Laisser le son du clic se jouer
+                pygame.time.wait(600)
+                self.audio.stopMusic()
+                # set mouse to default
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+>>>>>>> Stashed changes
                 interface = Interface(self.window)
                 interface.run()
             elif action and action.startswith('load_'):
