@@ -1,18 +1,31 @@
 class Joueur:
-    def __init__(self, listePerso, vie, inventaire, xp, niveau):
+    def __init__(self, listePerso, inventaire, xp, niveau,vie = 100):
         self.__listePerso = listePerso
         self.__vie = vie
         self.__inventaire = inventaire
         self.__niveau = niveau
         self.__xp = xp
+        self.__hauteur_saut = 1.0
 
     @property
     def get_level(self):
         return self.__niveau
 
     @property
-    def get_vie(self):
-        return self.__vie
+    def vie(self, valeur):
+        if valeur > 0:
+            self.__vie = valeur
+        else:
+            self.__vie = 0
+            print("Le joueur est mort.")
+        print(f"Vie actuelle: {self.__vie}")
+
+    def modifier_vie(self, quantite):
+        self.vie += quantite
+        if self.__vie < 0:
+            self.__vie = 0
+            print("Le joueur est mort.")
+    
 
     @property
     def get_inventaire(self):
@@ -23,6 +36,14 @@ class Joueur:
             self._inventaire.append(objet)
         else:
             print("Vous possedez déjà cette objet")
+
+    @hauteur_saut.setter
+    def hauteur_saut(self, valeur):
+        self.__hauteur_saut = valeur
+
+    def modifier_saut(self, multiplicateur):
+        self.hauteur_saut *= multiplicateur
+        print(f"Hauteur de saut modifiée à: {self.hauteur_saut}")
 
 
     def AjouterNiveau(self):
