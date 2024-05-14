@@ -1,4 +1,4 @@
-import pygame, os
+import pygame, os, json
 from PauseMenu import PauseMenu
 
 class Interface:
@@ -29,13 +29,24 @@ class Interface:
         if self.idOfLoadedGame:
             window_width = self.window.get_width()
             window_height = self.window.get_height()
-            print("Chargement de la partie : " + str(self.idOfLoadedGame))
 
             fontCredits = pygame.font.SysFont(None, 20)
             credits_surface = fontCredits.render('Vous jouez sur votre sauvegarde: #' + str(self.idOfLoadedGame), True, (255, 255, 255))
             credits_rect = credits_surface.get_rect(center=(window_width - 140, window_height - 20))
             self.window.blit(credits_surface, credits_rect)
-
+        else:
+            if os.path.exists("saves.json"):
+                with open("saves.json", "r") as f:
+                    if os.stat("saves.json").st_size == 0:
+                        with open("saves.json", "w") as f:
+                            json.dump({}, f)
+            else:
+                with open("saves.json", "w") as f:
+                    json.dump({}, f)
+            with open("saves.json", "r") as f:
+                currentlySaves = json.load(f)
+                self.idOfLoadedGame = len(currentlySaves) + 1
+        
         pygame.display.update()
 
     def effacer_zone(self, x, y, width, height):
@@ -58,7 +69,7 @@ class Interface:
                     exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        pause_menu = PauseMenu(self.window)
+                        pause_menu = PauseMenu(self.window, self.idOfLoadedGame)
                         pause_menu.run()
 
             self.draw()

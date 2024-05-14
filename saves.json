@@ -1,1 +1,38 @@
-{}
+{
+    "2": {
+        "time": "14-05-2024 15:12",
+        "level": "1",
+        "player": {
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "inventory": [],
+            "health": 100
+        }
+    },
+    "3": {
+        "time": "14-05-2024 15:13",
+        "level": "1",
+        "player": {
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "inventory": [],
+            "health": 100
+        }
+    },
+    "1": {
+        "time": "14-05-2024 15:14",
+        "level": "1",
+        "player": {
+            "position": {
+                "x": 0,
+                "y": 0
+            },
+            "inventory": [],
+            "health": 100
+        }
+    }
+}
