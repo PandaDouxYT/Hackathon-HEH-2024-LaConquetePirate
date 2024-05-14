@@ -158,6 +158,7 @@ class MenuPrincipal:
                     pos = pygame.mouse.get_pos()
                     for key, button in self.buttons.items():
                         if button.collidepoint(pos):
+                            self.audio.musicAmbiance("clic.mp3")
                             self.button_clicked = True  # Set the flag to True when a button is clicked
                             self.click_timer = pygame.time.get_ticks()  # Record the time of the click
                             if key == 'play':
@@ -181,9 +182,14 @@ class MenuPrincipal:
             self.draw()
             action = self.handle_events()
             if action == 'play':
-                self.audio.stopMusic()  # Stop the music before launching the interface
+                
                 menu_active = False
                 print("Lancement du jeu...")
+                
+                # Laisser le son du clic se jouer
+                pygame.time.wait(600)
+                self.audio.stopMusic()
+
                 interface = Interface(self.window)
                 interface.run()
             elif action and action.startswith('load_'):
@@ -191,8 +197,12 @@ class MenuPrincipal:
                 menu_active = False
                 save_slot = action.split('_')[1]
                 print(f"On charge la sauvegarde #{save_slot}")
-                # TODO: Load the save
 
+                # Laisser le son du clic se jouer
+                pygame.time.wait(600)
+                self.audio.stopMusic()
+
+                # TODO: Load the save completely
                 interface = Interface(self.window, save_slot)
                 interface.run()
 

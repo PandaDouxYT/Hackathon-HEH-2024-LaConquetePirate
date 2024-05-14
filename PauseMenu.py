@@ -1,4 +1,5 @@
 import pygame
+from Audio import Audio
 
 class PauseMenu:
     def __init__(self, window):
@@ -7,10 +8,12 @@ class PauseMenu:
         QUAND: 14-05-2024
         QUOI: Initialisation du menu de pause
         """
+        self.audio = Audio()
+        
         pygame.font.init()
         self.window = window
-        self.font = pygame.font.Font(None, 36)
-        self.title_font = pygame.font.Font(None, 50)
+        self.font = pygame.font.Font(pygame.font.match_font('Helvetica', bold=True), 20)
+        self.title_font = pygame.font.Font(pygame.font.match_font('Helvetica', bold=True), 40)
         self.window_width, self.window_height = window.get_size()
         
         # Dimensions et positionnement du menu
@@ -40,9 +43,9 @@ class PauseMenu:
         }
         
         self.texts = {
-            'resume': self.font.render('Retour en jeu', True, (0, 0, 0)),
-            'save': self.font.render('Sauvegarder la partie', True, (0, 0, 0)),
-            'quit': self.font.render('Quitter le jeu', True, (0, 0, 0))
+            'resume': self.font.render('Retour en jeu', True, (255, 255, 255)),
+            'save': self.font.render('Sauvegarder la partie', True, (255, 255, 255)),
+            'quit': self.font.render('Quitter le jeu', True, (255, 255, 255))
         }
         
         # Control du volume
@@ -52,7 +55,7 @@ class PauseMenu:
         self.volume_rect = pygame.Rect(self.button_x, button_positions[1] + 110, self.button_width, 20)
         self.volume_level = 1.0  # Volume initial
 
-        self.pause_text = self.title_font.render('PAUSE', True, (0, 0, 0))
+        self.pause_text = self.title_font.render('- Menu -', True, (0, 0, 0))
         self.pause_text_rect = self.pause_text.get_rect(center=(self.menu_x + self.menu_width // 2, self.title_y + self.title_height // 2))
         
         self.menu_active = True
@@ -71,21 +74,24 @@ class PauseMenu:
         s.fill((0, 0, 0))  # Remplir la surface en noir
         self.window.blit(s, (0, 0))  # Dessiner la surface sur la fenêtre
         
-        pygame.draw.rect(self.window, (255, 255, 255), (self.menu_x, self.menu_y, self.menu_width, self.menu_height), border_radius=4)
-        pygame.draw.rect(self.window, (200, 200, 200), (self.menu_x, self.title_y, self.menu_width, self.title_height))
+        # Dessiner le fond du menu avec des coins arrondis et une ombre
+        pygame.draw.rect(self.window, (255, 255, 255), (self.menu_x, self.menu_y, self.menu_width, self.menu_height), border_radius=10)
+        pygame.draw.rect(self.window, (230, 230, 230), (self.menu_x, self.title_y, self.menu_width, self.title_height), border_radius=10)
         
         self.window.blit(self.pause_text, self.pause_text_rect)
         
+        # Dessiner les boutons avec des coins arrondis
         for key, button in self.buttons.items():
+            pygame.draw.rect(self.window, (0, 122, 255), button, border_radius=10)
             text_rect = self.texts[key].get_rect(center=button.center)
             self.window.blit(self.texts[key], text_rect)
 
         # Affichier le volume
         self.window.blit(self.volume_label, self.volume_label_rect)
-        pygame.draw.rect(self.window, (200, 200, 200), self.volume_rect)
+        pygame.draw.rect(self.window, (200, 200, 200), self.volume_rect, border_radius=10)
         handle_x = self.volume_rect.x + int(self.volume_level * (self.volume_rect.width - 20))
         handle_rect = pygame.Rect(handle_x, self.volume_rect.y, 20, self.volume_rect.height)
-        pygame.draw.rect(self.window, (100, 100, 100), handle_rect)
+        pygame.draw.rect(self.window, (0, 122, 255), handle_rect, border_radius=10)
 
         pygame.display.update()
 
@@ -105,6 +111,7 @@ class PauseMenu:
                     pos = pygame.mouse.get_pos()
                     for key, button in self.buttons.items():
                         if button.collidepoint(pos):
+                            self.audio.musicAmbiance("clic.mp3")
                             if key == 'resume':
                                 return True
                             elif key == 'save':
