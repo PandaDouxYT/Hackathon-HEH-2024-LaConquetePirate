@@ -1,5 +1,6 @@
 import pygame, os, json
 from Audio import Audio
+from Joueur import Joueur
 
 class PauseMenu:
     def __init__(self, window, idOfLoadedGame):
@@ -135,7 +136,7 @@ class PauseMenu:
 
                                 with open("saves.json", "r") as f:
                                     currentlySaves = json.load(f)
-                                    
+
                                 from datetime import datetime
 
                                 try:
@@ -154,12 +155,13 @@ class PauseMenu:
                                     if self.idOfLoadedGame in currentlySaves:
                                         del currentlySaves[self.idOfLoadedGame]
 
+                                    joueurActif = Joueur(0, 10)
                                     currentlySaves[self.idOfLoadedGame] = {
                                         "time": currentDateTime,
-                                        "level": "1",
+                                        "level": joueurActif.niveau(),
                                         "player": {
                                             "position": {
-                                                "x": 0,
+                                                "x": 9,
                                                 "y": 0
                                             },
                                             "inventory": [],
