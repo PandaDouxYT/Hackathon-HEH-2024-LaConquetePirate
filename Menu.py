@@ -66,9 +66,6 @@ class MenuPrincipal:
         credits_rect = credits_surface.get_rect(center=(self.window_width // 2, self.window_height-20))
         self.window.blit(credits_surface, credits_rect)
 
-
-
-
         self.button_width = 350
         self.button_height = 50
         self.button_margin = 5  # Margin for the black background
@@ -87,7 +84,6 @@ class MenuPrincipal:
         else:
             with open("saves.json", "w") as f:
                 json.dump({}, f)
-        
 
         # Calculate the starting y position to center all buttons
         total_button_height = (self.button_height + self.button_margin + self.button_spacing) * (2 + len(save_slots)) - self.button_spacing
@@ -148,7 +144,7 @@ class MenuPrincipal:
         QUAND: 14-05-2024
         QUOI: Gère les événements de la fenêtre
         """
-
+        cursor_changed = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -169,6 +165,15 @@ class MenuPrincipal:
                             elif key.startswith('load_'):
                                 save_slot = key.split('_')[1]
                                 return f'load_{save_slot}'
+            elif event.type == pygame.MOUSEMOTION:
+                pos = pygame.mouse.get_pos()
+                for key, button in self.buttons.items():
+                    if button.collidepoint(pos):
+                        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                        cursor_changed = True
+                        break
+                if not cursor_changed:
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         return None
     
     def run(self):
@@ -189,6 +194,8 @@ class MenuPrincipal:
                 # Laisser le son du clic se jouer
                 pygame.time.wait(600)
                 self.audio.stopMusic()
+                # set mouse to default
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
                 interface = Interface(self.window)
                 interface.run()
@@ -201,6 +208,8 @@ class MenuPrincipal:
                 # Laisser le son du clic se jouer
                 pygame.time.wait(600)
                 self.audio.stopMusic()
+
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
                 # TODO: Load the save completely
                 interface = Interface(self.window, save_slot)
