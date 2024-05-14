@@ -28,15 +28,15 @@ def pause_menu(window, clock):
     ]
     
     buttons = {
-        'resume': pygame.Rect(button_x, button_positions[0], button_width, button_height),
-        'save': pygame.Rect(button_x, button_positions[1], button_width, button_height),
-        'quit': pygame.Rect(button_x, button_positions[3], button_width, button_height)
+        'reprendre': pygame.Rect(button_x, button_positions[0], button_width, button_height),
+        'sauver': pygame.Rect(button_x, button_positions[1], button_width, button_height),
+        'quitter': pygame.Rect(button_x, button_positions[3], button_width, button_height)
     }
     
     texts = {
-        'resume': font.render('Retour en jeu', True, (0, 0, 0)),
-        'save': font.render('Sauvegarder la partie', True, (0, 0, 0)),
-        'quit': font.render('Quitter le jeu', True, (0, 0, 0))
+        'reprendre': font.render('Retour en jeu', True, (0, 0, 0)),
+        'sauver': font.render('Sauvegarder la partie', True, (0, 0, 0)),
+        'quitter': font.render('Quitter le jeu', True, (0, 0, 0))
     }
     
     # Control du volume
@@ -80,11 +80,11 @@ def pause_menu(window, clock):
                     pos = pygame.mouse.get_pos()
                     for key, button in buttons.items():
                         if button.collidepoint(pos):
-                            if key == 'resume':
+                            if key == 'reprendre':
                                 return True
-                            elif key == 'save':
+                            elif key == 'sauver':
                                 print("Sauvegarde du jeu...")
-                            elif key == 'quit':
+                            elif key == 'quitter':
                                 pygame.quit()
                                 exit()
                     if volume_rect.collidepoint(pos):
@@ -102,5 +102,5 @@ def pause_menu(window, clock):
                 if event.key == pygame.K_ESCAPE:
                     return True 
         
-        clock.tick(20)
+        clock.tick(60)
 
