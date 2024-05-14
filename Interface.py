@@ -1,7 +1,8 @@
 import pygame, os
+from PauseMenu import PauseMenu
 
 class Interface:
-    def __init__(self, window):
+    def __init__(self, window, idOfLoadedGame=None):
         """
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
@@ -9,6 +10,7 @@ class Interface:
         """
         self.window = window
         self.font = pygame.font.Font(None, 36)
+        self.idOfLoadedGame = idOfLoadedGame
 
         print("Interface initialisée")
         
@@ -18,38 +20,89 @@ class Interface:
         QUAND: 13-05-2024
         QUOI: Dessine l'interface principale du jeu
         """
-        self.afficher_joueur_actif()
-        self.afficher_barre_vie(50)
+        self.window.fill((0, 0, 0))
+        self.afficher_joueur_actif("1")
+        self.afficher_barre_vie(100)
         self.afficher_nombre_piece()
-        self.afficher_nombre_experience(0)
+        self.afficher_nombre_experience()
         self.afficher_nombre_level()
+        if self.idOfLoadedGame:
+            window_width = self.window.get_width()
+            window_height = self.window.get_height()
+            print("Chargement de la partie : " + str(self.idOfLoadedGame))
 
-    def afficher_joueur_actif(self):
+            fontCredits = pygame.font.SysFont(None, 20)
+            credits_surface = fontCredits.render('Vous jouez sur votre sauvegarde: #' + str(self.idOfLoadedGame), True, (255, 255, 255))
+            credits_rect = credits_surface.get_rect(center=(window_width - 140, window_height - 20))
+            self.window.blit(credits_surface, credits_rect)
+
+        pygame.display.update()
+
+    def effacer_zone(self, x, y, width, height):
+        """
+        Efface la zone spécifiée en la remplissant avec la couleur de fond de la fenêtre.
+        """
+        self.window.fill((0, 0, 0), (x, y, width, height))
+    
+    def run(self):
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Boucle principale de l'interface du jeu
+        """
+        interface_active = True
+        while interface_active:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pause_menu = PauseMenu(self.window)
+                        pause_menu.run()
+
+            self.draw()
+            pygame.time.wait(20)
+
+    def afficher_joueur_actif(self, idOfActivePlayer):
         """
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Affiche le joueur actif en haut à gauche de la fenêtre
         """
-
-        # Chargement des images
-        joueur1_selected_img = pygame.image.load(os.path.join("assets", "img", "afficherJoueur1_selected.png"))
-        joueur2_unselected_img = pygame.image.load(os.path.join("assets", "img", "afficherJoueur2_unselected.png"))
-        joueur3_unselected_img = pygame.image.load(os.path.join("assets", "img", "afficherJoueur3_unselected.png"))
+        # Définir les chemins des images
+        joueur_imgs = {
+            1: {
+                'selected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur1_selected.png")),
+                'unselected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur1_unselected.png"))
+            },
+            2: {
+                'selected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur2_selected.png")),
+                'unselected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur2_unselected.png"))
+            },
+            3: {
+                'selected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur3_selected.png")),
+                'unselected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur3_unselected.png"))
+            }
+        }
+        joueur1_img = joueur_imgs[1]['selected'] if idOfActivePlayer == "1" else joueur_imgs[1]['unselected']
+        joueur2_img = joueur_imgs[2]['selected'] if idOfActivePlayer == "2" else joueur_imgs[2]['unselected']
+        joueur3_img = joueur_imgs[3]['selected'] if idOfActivePlayer == "3" else joueur_imgs[3]['unselected']
 
         # Positionnement des images
         joueur1_selected_x = 10
         joueur1_selected_y = 10
 
-        joueur2_unselected_x = joueur1_selected_x + joueur1_selected_img.get_width() + 10
+        joueur2_unselected_x = joueur1_selected_x + joueur1_img.get_width() + 10
         joueur2_unselected_y = 10
 
-        joueur3_unselected_x = joueur2_unselected_x + joueur2_unselected_img.get_width() + 10
+        joueur3_unselected_x = joueur2_unselected_x + joueur2_img.get_width() + 10
         joueur3_unselected_y = 10
 
         # Dessiner les images sur la fenêtre
-        self.window.blit(joueur1_selected_img, (joueur1_selected_x, joueur1_selected_y))
-        self.window.blit(joueur2_unselected_img, (joueur2_unselected_x, joueur2_unselected_y))
-        self.window.blit(joueur3_unselected_img, (joueur3_unselected_x, joueur3_unselected_y))
+        self.window.blit(joueur1_img, (joueur1_selected_x, joueur1_selected_y))
+        self.window.blit(joueur2_img, (joueur2_unselected_x, joueur2_unselected_y))
+        self.window.blit(joueur3_img, (joueur3_unselected_x, joueur3_unselected_y))
 
     def afficher_barre_vie(self, pourcentage):
         """
@@ -76,82 +129,70 @@ class Interface:
 
     def afficher_nombre_piece(self, nb_pieces=0):
         """
-        QUI: Anthony VERGEYLEN
-        QUAND: 13-05-2024
-        QUOI: Affiche le nombre de pièces du joueur actif
+        Affiche le nombre de pièces du joueur actif.
         """
-        # Chargement de l'image de la pièce
         coin_img = pygame.image.load(os.path.join("assets", "img", "coin.png"))
         coin_width = coin_img.get_width()
 
-        # Création du texte
         text = self.font.render(str(nb_pieces), True, (255, 255, 255))
         text_width = text.get_width()
         text_height = text.get_height()
 
         window_width = self.window.get_width()
 
-        # Positionnement de l'image à 10 pixels du bord droit de la fenêtre et du haut
-        coin_x = window_width - coin_width - text_width - 30  # 10 pixels d'espace entre le texte et l'image + 10 du bord
+        coin_x = window_width - coin_width - text_width - 30
         coin_y = 10
 
-        # Positionnement du texte juste à côté de l'image
         text_x = coin_x + coin_width + 10
-        text_y = coin_y + (coin_img.get_height() / 2) - (text_height / 2)  # Alignement vertical au centre de l'image
+        text_y = coin_y + (coin_img.get_height() / 2) - (text_height / 2)
 
-        # Dessiner l'image et le texte sur la fenêtre
+        # Effacer la zone avant de redessiner
+        self.effacer_zone(coin_x, coin_y, coin_width + text_width + 20, coin_img.get_height())
+
         self.window.blit(coin_img, (coin_x, coin_y))
         self.window.blit(text, (text_x, text_y))
 
     def afficher_nombre_level(self, level=0):
         """
-        QUI: Anthony VERGEYLEN
-        QUAND: 13-05-2024
-        QUOI: Affiche le niveau du joueur actif
+        Affiche le niveau du joueur actif.
         """
-
-        # Chargement de l'image de l'expérience
         xp_img = pygame.image.load(os.path.join("assets", "img", "level.png"))
         xp_width = xp_img.get_width()
 
-        # Création du texte
         text = self.font.render(str(level), True, (255, 255, 255))
         text_width = text.get_width()
         text_height = text.get_height()
 
         window_width = self.window.get_width()
 
-        # Positionnement de l'image à 10 pixels du bord droit de la fenêtre et du haut
         xp_x = window_width - xp_width - text_width - 30
         xp_y = 10 + xp_img.get_height() + 20
 
-        # Positionnement du texte juste à côté de l'image
         text_x = xp_x + xp_width + 10
         text_y = xp_y + (xp_img.get_height() / 2) - (text_height / 2)
 
-        # Dessiner l'image et le texte sur la fenêtre
+        # Effacer la zone avant de redessiner
+        self.effacer_zone(xp_x, xp_y, xp_width + text_width + 20, xp_img.get_height())
+
         self.window.blit(xp_img, (xp_x, xp_y))
         self.window.blit(text, (text_x, text_y))
 
-    def afficher_nombre_experience(self, xp):
+    def afficher_nombre_experience(self, xp=0):
         """
-        QUI: Anthony VERGEYLEN
-        QUAND: 13-05-2024
-        QUOI: Affiche le nombre d'expérience du joueur actif
+        Affiche le nombre d'expérience du joueur actif.
         """
-
-        # Afficher l'expérience du joueur actif
         text = self.font.render(str(xp), True, (255, 255, 255))
         text_width = text.get_width()
         text_height = text.get_height()
 
         window_width = self.window.get_width()
 
-        # Positionnement du texte à 10 pixels du bord droit de la fenêtre et du haut
         text_x = window_width - text_width - 20
         text_y = 105
 
-        # Dessiner le texte sur la fenêtre
+        # Effacer la zone avant de redessiner
+        self.effacer_zone(text_x - 10, text_y, text_width + 20, text_height)
+
         self.window.blit(text, (text_x, text_y))
 
 
@@ -191,7 +232,6 @@ class Interface:
         barre_vie_y = 50  # Définit la position verticale en haut avec un peu d'espace
 
         window_width = self.window.get_width()
-        window_height = self.window.get_height()
 
         # Centrer la barre de vie horizontalement
         barre_vie_x = (window_width - barre_vie_width) // 2
