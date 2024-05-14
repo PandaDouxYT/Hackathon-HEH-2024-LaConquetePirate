@@ -1,5 +1,4 @@
-import pygame
-import os
+import pygame, os, json
 from Interface import Interface
 from Audio import Audio
 
@@ -33,6 +32,19 @@ class MenuPrincipal:
         self.button_spacing = 20  # Additional spacing between buttons
 
         save_slots = [] # (eg. ["1", "2", "3"])
+        # get file saves.json, if file exist, get, else create
+        if os.path.exists("saves.json"):
+            with open("saves.json", "r") as f:
+                # if file is empty, edit the file to {}
+                if os.stat("saves.json").st_size == 0:
+                    with open("saves.json", "w") as f:
+                        json.dump({}, f)
+                else :
+                    save_slots = json.load(f)
+        else:
+            with open("saves.json", "w") as f:
+                json.dump({}, f)
+        
 
         # Calculate the starting y position to center all buttons
         total_button_height = (self.button_height + self.button_margin + self.button_spacing) * (2 + len(save_slots)) - self.button_spacing
