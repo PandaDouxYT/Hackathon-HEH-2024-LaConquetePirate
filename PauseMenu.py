@@ -1,5 +1,6 @@
 import pygame, os, json
 from Audio import Audio
+from Joueur import Joueur
 
 class PauseMenu:
     def __init__(self, window, idOfLoadedGame):
@@ -131,48 +132,46 @@ class PauseMenu:
                             if key == 'resume':
                                 return True
                             elif key == 'save':
-                                print("Sauvegarde du jeu...")
+                                print("Sauvegarde du jeu!...")
 
                                 with open("saves.json", "r") as f:
                                     currentlySaves = json.load(f)
 
-                                if (len(currentlySaves) >= self.maxSaves) and (self.idOfLoadedGame not in currentlySaves):
+                                from datetime import datetime
+
+                                try:
+                                    with open("saves.json", "r") as f:
+                                        currentlySaves = json.load(f)
+                                except FileNotFoundError:
+                                    currentlySaves = {}
+
+                                # Vérifier si le nombre maximum de sauvegardes est atteint
+                                if len(currentlySaves) >= self.maxSaves and self.idOfLoadedGame not in currentlySaves:
+                                    print("Vous avez atteint le maximum de sauvegardes. ("+str(self.maxSaves)+"/"+str(self.maxSaves)+")")
                                     self.display_error_message = True
                                     self.error_message_start_time = pygame.time.get_ticks()
                                 else:
-                                    from datetime import datetime
+                                    currentDateTime = datetime.now().strftime('%d-%m-%Y %H:%M')
+                                    if self.idOfLoadedGame in currentlySaves:
+                                        del currentlySaves[self.idOfLoadedGame]
 
-                                    try:
-                                        with open("saves.json", "r") as f:
-                                            currentlySaves = json.load(f)
-                                    except FileNotFoundError:
-                                        currentlySaves = {}
-
-                                    # Vérifier si le nombre maximum de sauvegardes est atteint
-                                    if len(currentlySaves) >= self.maxSaves and self.idOfLoadedGame not in currentlySaves:
-                                        self.display_error_message = True
-                                        self.error_message_start_time = pygame.time.get_ticks()
-                                    else:
-                                        currentDateTime = datetime.now().strftime('%d-%m-%Y %H:%M')
-                                        if self.idOfLoadedGame in currentlySaves:
-                                            del currentlySaves[self.idOfLoadedGame]
-
-                                        currentlySaves[self.idOfLoadedGame] = {
-                                            "time": currentDateTime,
-                                            "level": "1",
-                                            "player": {
-                                                "position": {
-                                                    "x": 0,
-                                                    "y": 0
-                                                },
-                                                "inventory": [],
-                                                "health": 100
-                                            }
+                                    joueurActif = Joueur(0, 10)
+                                    currentlySaves[self.idOfLoadedGame] = {
+                                        "time": currentDateTime,
+                                        "level": joueurActif.niveau(),
+                                        "player": {
+                                            "position": {
+                                                "x": 9,
+                                                "y": 0
+                                            },
+                                            "inventory": [],
+                                            "health": 100
                                         }
+                                    }
 
-                                        # Écraser la sauvegarde idOfLoadedGame
-                                        with open("saves.json", "w") as f:
-                                            json.dump(currentlySaves, f, indent=4)
+                                    # Écraser la sauvegarde idOfLoadedGame
+                                    with open("saves.json", "w") as f:
+                                        json.dump(currentlySaves, f, indent=4)
                             elif key == 'quit':
                                 pygame.quit()
                                 exit()

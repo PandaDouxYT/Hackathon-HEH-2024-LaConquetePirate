@@ -47,6 +47,7 @@ class Interface:
                 currentlySaves = json.load(f)
                 self.idOfLoadedGame = len(currentlySaves) + 1
         
+
         pygame.display.update()
 
     def effacer_zone(self, x, y, width, height):

@@ -1,18 +1,14 @@
-import pygame
-import os
+import pygame, os, json
 from Interface import Interface
 from Audio import Audio
 
 class MenuPrincipal:
     def __init__(self, window):
-<<<<<<< Updated upstream
-=======
         """
         QUI: Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Initialisation de la classe MenuPrincipal
         """
->>>>>>> Stashed changes
         self.window = window
         self.window_width, self.window_height = self.window.get_size()
         self.font = pygame.font.Font(None, 36)
@@ -35,14 +31,45 @@ class MenuPrincipal:
         # Blit the title text on the window
         self.window.blit(title_surface, title_rect)
 
+        # Afficher en bas à droite "Hackathon 2024 - Haute École en Hainaut Mons"
+        fontCredits = pygame.font.SysFont(None, 20)
+        credits_surface = fontCredits.render('Hackathon 2024 - Haute École en Hainaut Mons', True, (255, 255, 255))
+        credits_rect = credits_surface.get_rect(center=(self.window_width - 180, self.window_height - 20))
+        self.window.blit(credits_surface, credits_rect)
+
+        # Afficher en bas à gauche "Inspiration du jeu: Trine"
+        fontInspiration = pygame.font.SysFont(None, 20)
+        inspiration_surface = fontInspiration.render('Inspiration du jeu: Trine', True, (255, 255, 255))
+        inspiration_rect = inspiration_surface.get_rect(center=(100, self.window_height - 20))
+        self.window.blit(inspiration_surface, inspiration_rect)
+
+        # afficher au millieu de l'écran "Jeu par Anthony VERGEYLEN" et juste en dessous "Musique par Nathan Isembaert"
+        fontCredits = pygame.font.SysFont(None, 20)
+        credits_surface = fontCredits.render('Un jeu imaginé par:', True, (255, 255, 255))
+        credits_rect = credits_surface.get_rect(center=(self.window_width // 2, self.window_height-105))
+        self.window.blit(credits_surface, credits_rect)
+
+        credits_surface = fontCredits.render('Vergeylen Anthony', True, (255, 255, 255))
+        credits_rect = credits_surface.get_rect(center=(self.window_width // 2, self.window_height-80))
+        self.window.blit(credits_surface, credits_rect)
+
+        credits_surface = fontCredits.render('Duchesne Guillaume', True, (255, 255, 255))
+        credits_rect = credits_surface.get_rect(center=(self.window_width // 2, self.window_height-60))
+        self.window.blit(credits_surface, credits_rect)
+
+        credits_surface = fontCredits.render('Nathan Isembaert', True, (255, 255, 255))
+        credits_rect = credits_surface.get_rect(center=(self.window_width // 2, self.window_height-40))
+        self.window.blit(credits_surface, credits_rect)
+
+        credits_surface = fontCredits.render('Ulrich Wilfried Nguepi Kengoum', True, (255, 255, 255))
+        credits_rect = credits_surface.get_rect(center=(self.window_width // 2, self.window_height-20))
+        self.window.blit(credits_surface, credits_rect)
+
         self.button_width = 350
         self.button_height = 50
         self.button_margin = 5  # Margin for the black background
         self.button_spacing = 20  # Additional spacing between buttons
 
-<<<<<<< Updated upstream
-        save_slots = [] # (eg. ["1", "2", "3"])
-=======
         self.maxSaves = 3  # Maximum number of saves
         save_slots = []  # (eg. ["1", "2", "3"])
         if os.path.exists("saves.json"):
@@ -55,7 +82,6 @@ class MenuPrincipal:
         else:
             with open("saves.json", "w") as f:
                 json.dump({}, f)
->>>>>>> Stashed changes
 
         # Calculate the starting y position to center all buttons
         total_button_height = (self.button_height + self.button_margin + self.button_spacing) * (2 + len(save_slots)) - self.button_spacing
@@ -80,7 +106,7 @@ class MenuPrincipal:
                 )
 
         self.texts = {
-            'play': self.font.render('Lancer une partie', True, (255, 255, 255)),
+            'play': self.font.render('Créer une nouvelle partie', True, (255, 255, 255)),
             'quit': self.font.render('Quitter', True, (255, 255, 255))
         }
 
@@ -97,6 +123,11 @@ class MenuPrincipal:
         self.error_message_start_time = 0
 
     def draw(self):
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Dessine le menu principal
+        """
         for key, button in self.buttons.items():
             # Draw black background
             black_rect = pygame.Rect(button.left - self.button_margin,
@@ -124,6 +155,12 @@ class MenuPrincipal:
         pygame.display.update()
 
     def handle_events(self):
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Gère les événements de la fenêtre
+        """
+        cursor_changed = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -133,6 +170,7 @@ class MenuPrincipal:
                     pos = pygame.mouse.get_pos()
                     for key, button in self.buttons.items():
                         if button.collidepoint(pos):
+                            self.audio.musicAmbiance("clic.mp3")
                             self.button_clicked = True  # Set the flag to True when a button is clicked
                             self.click_timer = pygame.time.get_ticks()  # Record the time of the click
                             if key == 'play':
@@ -150,19 +188,28 @@ class MenuPrincipal:
                             elif key.startswith('load_'):
                                 save_slot = key.split('_')[1]
                                 return f'load_{save_slot}'
+            elif event.type == pygame.MOUSEMOTION:
+                pos = pygame.mouse.get_pos()
+                for key, button in self.buttons.items():
+                    if button.collidepoint(pos):
+                        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                        cursor_changed = True
+                        break
+                if not cursor_changed:
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         return None
 
     def run(self):
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Boucle principale du menu principal et détection des actions
+        """
         menu_active = True
         while menu_active:
             self.draw()
             action = self.handle_events()
             if action == 'play':
-<<<<<<< Updated upstream
-                self.audio.stopMusic()  # Stop the music before launching the interface
-                menu_active = False
-                print("Lancement du jeu...")
-=======
                 menu_active = False
                 print("Lancement du jeu...")
 
@@ -172,12 +219,24 @@ class MenuPrincipal:
                 # set mouse to default
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
->>>>>>> Stashed changes
                 interface = Interface(self.window)
                 interface.run()
             elif action and action.startswith('load_'):
+                self.audio.stopMusic()
+                menu_active = False
                 save_slot = action.split('_')[1]
                 print(f"On charge la sauvegarde #{save_slot}")
+
+                # Laisser le son du clic se jouer
+                pygame.time.wait(600)
+                self.audio.stopMusic()
+
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+                # TODO: Load the save completely
+                interface = Interface(self.window, save_slot)
+                interface.run()
+
             pygame.time.wait(20)
             if self.button_clicked and pygame.time.get_ticks() - self.click_timer > 100:  # 100 ms delay
                 self.button_clicked = False
