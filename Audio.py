@@ -41,4 +41,9 @@ class Audio:
         pygame.mixer.music.set_volume(0.5)
 
     def stopMusic(self):
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Arrête la musique en cours
+        """
         pygame.mixer.music.stop()

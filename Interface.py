@@ -28,6 +28,11 @@ class Interface:
         pygame.display.update()
     
     def run(self):
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Boucle principale de l'interface du jeu
+        """
         interface_active = True
         while interface_active:
             for event in pygame.event.get():

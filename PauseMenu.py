@@ -2,6 +2,11 @@ import pygame
 
 class PauseMenu:
     def __init__(self, window):
+        """
+        QUI: Nathan Isembaert & Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Initialisation du menu de pause
+        """
         pygame.font.init()
         self.window = window
         self.font = pygame.font.Font(None, 36)
@@ -54,6 +59,12 @@ class PauseMenu:
         self.adjusting_volume = False
 
     def draw(self):
+        """
+        QUI: Nathan Isembaert & Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Dessine le menu de pause à l'écran
+        """
+
         # Dessiner un fond noir semi-transparent
         s = pygame.Surface((self.window_width, self.window_height))  # Taille de la surface
         s.set_alpha(128)  # Transparence : 0 transparent, 255 opaque
@@ -79,6 +90,12 @@ class PauseMenu:
         pygame.display.update()
 
     def handle_events(self):
+        """
+        QUI: Nathan Isembaert & Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Gère les événements du menu de pause
+        """
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -112,6 +129,12 @@ class PauseMenu:
         return False
 
     def run(self):
+        """
+        QUI: Nathan Isembaert & Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Boucle principale du menu de pause
+        """
+
         while self.menu_active:
             self.draw()
             if self.handle_events():
