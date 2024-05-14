@@ -1,11 +1,12 @@
 import pygame
+
 from Menu import MenuPrincipal
 
 pygame.init()
 
 width = 1920
 height = 1080
-win = (width, height)
+win = ((width, height))
 clock = pygame.time.Clock()
 
 pygame.display.set_caption("La Conquête Pirate")
