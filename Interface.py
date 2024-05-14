@@ -2,7 +2,7 @@ import pygame, os
 from PauseMenu import PauseMenu
 
 class Interface:
-    def __init__(self, window):
+    def __init__(self, window, idOfLoadedGame=None):
         """
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
@@ -10,6 +10,7 @@ class Interface:
         """
         self.window = window
         self.font = pygame.font.Font(None, 36)
+        self.idOfLoadedGame = idOfLoadedGame
 
         print("Interface initialisée")
         
@@ -25,6 +26,16 @@ class Interface:
         self.afficher_nombre_piece()
         self.afficher_nombre_experience(0)
         self.afficher_nombre_level()
+        if self.idOfLoadedGame:
+            window_width = self.window.get_width()
+            window_height = self.window.get_height()
+            print("Chargement de la partie : " + str(self.idOfLoadedGame))
+
+            fontCredits = pygame.font.SysFont(None, 20)
+            credits_surface = fontCredits.render('Vous jouez sur votre sauvegarde: #' + str(self.idOfLoadedGame), True, (255, 255, 255))
+            credits_rect = credits_surface.get_rect(center=(window_width - 140, window_height - 20))
+            self.window.blit(credits_surface, credits_rect)
+
         pygame.display.update()
     
     def run(self):
@@ -214,7 +225,6 @@ class Interface:
         barre_vie_y = 50  # Définit la position verticale en haut avec un peu d'espace
 
         window_width = self.window.get_width()
-        window_height = self.window.get_height()
 
         # Centrer la barre de vie horizontalement
         barre_vie_x = (window_width - barre_vie_width) // 2

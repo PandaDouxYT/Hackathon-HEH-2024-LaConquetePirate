@@ -187,8 +187,15 @@ class MenuPrincipal:
                 interface = Interface(self.window)
                 interface.run()
             elif action and action.startswith('load_'):
+                self.audio.stopMusic()
+                menu_active = False
                 save_slot = action.split('_')[1]
                 print(f"On charge la sauvegarde #{save_slot}")
+                # TODO: Load the save
+
+                interface = Interface(self.window, save_slot)
+                interface.run()
+
             pygame.time.wait(20)
             if self.button_clicked and pygame.time.get_ticks() - self.click_timer > 100:  # 100 ms delay
                 self.button_clicked = False
