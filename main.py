@@ -17,7 +17,7 @@ window = pygame.display.set_mode(win, pygame.FULLSCREEN)
 
 interface = Interface(window)
 audio = Audio()
-map = carte(1920, 1080, 'assets/img/maps.jpg', 1)  # Create a carte instance with image path
+map = carte(1920, 1080, 'assets/img/img3.png', 1)  # Create a carte instance with image path
 
 
 def quit_game():

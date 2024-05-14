@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+<<<<<<< HEAD
+=======
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
@@ -30,10 +32,13 @@
   "associatedIndex": 4
 }]]></component>
   <component name="ProjectId" id="2gRmg1qEl6mcHrDmEH0QzyDwyTn" />
+>>>>>>> Carte
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+<<<<<<< HEAD
+=======
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.Carte.executor": "Run",
@@ -63,4 +68,5 @@
     <SUITE FILE_PATH="coverage/HackathonGR14$main.coverage" NAME="main Coverage Results" MODIFIED="1715693767641" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/HackathonGR14$Carte.coverage" NAME="Carte Coverage Results" MODIFIED="1715691652232" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
+>>>>>>> Carte
 </project>
