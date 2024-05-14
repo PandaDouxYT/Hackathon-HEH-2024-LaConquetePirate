@@ -67,7 +67,7 @@ class MenuPrincipal:
                 )
 
         self.texts = {
-            'play': self.font.render('Lancer une partie', True, (255, 255, 255)),
+            'play': self.font.render('Créer une nouvelle partie', True, (255, 255, 255)),
             'quit': self.font.render('Quitter', True, (255, 255, 255))
         }
 
