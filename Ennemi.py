@@ -1,6 +1,7 @@
 
 from Personnage import Personnage
 
+
 class Ennemi(Personnage):
 
     def __init__(self, nom, vie, degats, position, inventaire, schemaAttaque):
