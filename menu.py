@@ -43,7 +43,7 @@ def pause_menu(window, clock):
     
     menu_active = True
     while menu_active:
-        pygame.draw.rect(window, (255, 255, 255), (menu_x, menu_y, menu_width, menu_height))  # Draw the menu background
+        pygame.draw.rect(window, (255, 255, 255), (menu_x, menu_y, menu_width, menu_height),border_radius=4)  # Draw the menu background
         pygame.draw.rect(window, (200, 200, 200), (menu_x, title_y, menu_width, title_height))  # Draw the title rectangle
         
         window.blit(pause_text, pause_text_rect)  # Draw the "PAUSE" text
