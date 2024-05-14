@@ -1,4 +1,5 @@
 import pygame, os
+from PauseMenu import PauseMenu
 
 class Interface:
     def __init__(self, window):
@@ -18,11 +19,28 @@ class Interface:
         QUAND: 13-05-2024
         QUOI: Dessine l'interface principale du jeu
         """
+        self.window.fill((0, 0, 0))
         self.afficher_joueur_actif()
         self.afficher_barre_vie(50)
         self.afficher_nombre_piece()
         self.afficher_nombre_experience(0)
         self.afficher_nombre_level()
+        pygame.display.update()
+    
+    def run(self):
+        interface_active = True
+        while interface_active:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pause_menu = PauseMenu(self.window)
+                        pause_menu.run()
+
+            self.draw()
+            pygame.time.wait(20)
 
     def afficher_joueur_actif(self):
         """
