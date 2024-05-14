@@ -1,6 +1,6 @@
 class Personnage:
-    def __init__(self):
-        self._nom = ""
+    def __init__(self, nom):
+        self._nom = nom
         self._vie = 100
         self._degats = 0
         self._position = (0 ,0)
@@ -10,7 +10,6 @@ class Personnage:
     def get_position(self):
         return self._position
 
-    
     def deplacer(self, x, y):
         self._position = (x, y)
 

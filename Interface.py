@@ -1,7 +1,7 @@
 import pygame, os, json
 from PauseMenu import PauseMenu
 from Joueur import Joueur
-
+from Personnage import Personnage
 class Interface:
     def __init__(self, window, idOfLoadedGame=None):
         """
@@ -13,7 +13,8 @@ class Interface:
         self.font = pygame.font.Font(None, 36)
         self.idOfLoadedGame = idOfLoadedGame
 
-        self.joueurActif = Joueur()
+        personnage = Personnage("Capitaine Melon")
+        self.joueurActif = Joueur(personnage)
 
         print("Interface initialisée")
         

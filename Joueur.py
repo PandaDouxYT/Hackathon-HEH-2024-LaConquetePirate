@@ -1,18 +1,18 @@
 from Personnage import Personnage
 
-class Joueur(Personnage):
-    def __init__(self, vie=100, inventaire=[], xp=10, niveau=0, piece=0):
-        super().__init__()
+class Joueur:
+    def __init__(self, personnage, vie=100, inventaire=[], xp=10, niveau=0, piece=0):
         self._vie = vie
         self._inventaire = inventaire
         self._niveau = niveau
         self._xp = xp
         self._piece = piece
+        self._hauteur_saut = 1.0
+        self._personnage = personnage
 
     @property
     def get_position(self):
-        return super().get_position
-
+        return self._personnage.get_position
     @property
     def get_level(self):
         return self._niveau
@@ -20,6 +20,10 @@ class Joueur(Personnage):
     @property
     def get_vie(self):
         return self._vie
+
+    def modifier_vie(self, quantite):
+        self.vie += quantite
+        return self.vie
 
     @property
     def get_xp(self):
@@ -39,6 +43,13 @@ class Joueur(Personnage):
         else:
             print("Vous possedez déjà cette objet")
 
+    @property
+    def hauteur_saut(self, valeur):
+        self._hauteur_saut = valeur
+
+    def modifier_saut(self, multiplicateur):
+        self.hauteur_saut *= multiplicateur
+        print(f"Hauteur de saut modifiée à: {self.hauteur_saut}")
 
     def AjouterNiveau(self):
         if(self._xp > 100):

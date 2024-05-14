@@ -133,13 +133,11 @@ class PauseMenu:
                             if key == 'resume':
                                 return True
                             elif key == 'save':
-                                print("Sauvegarde du jeu!...")
-
-                                with open("saves.json", "r") as f:
-                                    currentlySaves = json.load(f)
-
                                 from datetime import datetime
 
+                                print("Sauvegarde du jeu!...")
+
+                                # Charger les sauvegardes existantes ou initialiser un dictionnaire vide
                                 try:
                                     with open("saves.json", "r") as f:
                                         currentlySaves = json.load(f)
@@ -148,14 +146,15 @@ class PauseMenu:
 
                                 # Vérifier si le nombre maximum de sauvegardes est atteint
                                 if len(currentlySaves) >= self.maxSaves and self.idOfLoadedGame not in currentlySaves:
-                                    print("Vous avez atteint le maximum de sauvegardes. ("+str(self.maxSaves)+"/"+str(self.maxSaves)+")")
+                                    print("Vous avez atteint le maximum de sauvegardes. (" + str(self.maxSaves) + "/" + str(self.maxSaves) + ")")
                                     self.display_error_message = True
                                     self.error_message_start_time = pygame.time.get_ticks()
                                 else:
                                     currentDateTime = datetime.now().strftime('%d-%m-%Y %H:%M')
-                                    if self.idOfLoadedGame in currentlySaves:
-                                        del currentlySaves[self.idOfLoadedGame]
-
+                                    
+                                    if str(self.idOfLoadedGame) in currentlySaves:
+                                        del currentlySaves[str(self.idOfLoadedGame)]
+                                    
                                     currentlySaves[self.idOfLoadedGame] = {
                                         "time": currentDateTime,
                                         "level": self.joueurActif.get_level,
