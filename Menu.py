@@ -2,13 +2,13 @@ import pygame
 
 def pause_menu(window, clock):
     pygame.font.init()
-    font = pygame.font.Font(None, 36)  # Font for buttons
-    title_font = pygame.font.Font(None, 50)  # Larger font for the title "PAUSE"
+    font = pygame.font.Font(None, 36) 
+    title_font = pygame.font.Font(None, 50)  
     window_width, window_height = window.get_size()
 
     # Dimensions et positionnement du menu
     menu_width = 450
-    menu_height = 300  # Increased height to accommodate title and buttons
+    menu_height = 300  
     menu_x = (window_width - menu_width) // 2
     menu_y = (window_height - menu_height) // 2
     
@@ -16,10 +16,10 @@ def pause_menu(window, clock):
     button_height = 50
     button_x = menu_x + (menu_width - button_width) // 2
     
-    title_height = 60  # Height of the title rectangle
-    title_y = menu_y + 20  # Position the title slightly inside the top of the menu
+    title_height = 60  
+    title_y = menu_y + 20  
     
-    # Adjust button positions relative to the menu
+    # Ajuste la position des boutons
     button_positions = [
         title_y + title_height + 20,
         title_y + title_height + 80,
@@ -43,14 +43,14 @@ def pause_menu(window, clock):
     
     menu_active = True
     while menu_active:
-        pygame.draw.rect(window, (255, 255, 255), (menu_x, menu_y, menu_width, menu_height),border_radius=4)  # Draw the menu background
-        pygame.draw.rect(window, (200, 200, 200), (menu_x, title_y, menu_width, title_height))  # Draw the title rectangle
+        pygame.draw.rect(window, (255, 255, 255), (menu_x, menu_y, menu_width, menu_height),border_radius=4)  # Rectangle blanc du menu
+        pygame.draw.rect(window, (200, 200, 200), (menu_x, title_y, menu_width, title_height)) 
         
-        window.blit(pause_text, pause_text_rect)  # Draw the "PAUSE" text
+        window.blit(pause_text, pause_text_rect) 
         
         for key, button in buttons.items():
             text_rect = texts[key].get_rect(center=button.center)
-            window.blit(texts[key], text_rect)  # Draw the button text without the gray rectangle
+            window.blit(texts[key], text_rect)  
 
         pygame.display.update()
         for event in pygame.event.get():
@@ -58,19 +58,19 @@ def pause_menu(window, clock):
                 pygame.quit()
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Left mouse button
+                if event.button == 1:  
                     pos = pygame.mouse.get_pos()
                     for key, button in buttons.items():
                         if button.collidepoint(pos):
                             if key == 'resume':
                                 return True
                             elif key == 'save':
-                                print("Sauvegarde du jeu...")  # Placeholder for save functionality
+                                print("Sauvegarde du jeu...")
                             elif key == 'quit':
                                 pygame.quit()
                                 exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    return True  # Resume the game if ESCAPE key is pressed
+                    return True 
 
         clock.tick(20)
