@@ -1,22 +1,37 @@
-class Joueur:
-    def __init__(self, listePerso, vie, inventaire, xp, niveau):
-        self.__listePerso = listePerso
-        self.__vie = vie
-        self.__inventaire = inventaire
-        self.__niveau = niveau
-        self.__xp = xp
+from Personnage import Personnage
+
+class Joueur(Personnage):
+    def __init__(self, vie=100, inventaire=[], xp=10, niveau=0, piece=0):
+        super().__init__()
+        self._vie = vie
+        self._inventaire = inventaire
+        self._niveau = niveau
+        self._xp = xp
+        self._piece = piece
+
+    @property
+    def get_position(self):
+        return super().get_position
 
     @property
     def get_level(self):
-        return self.__niveau
+        return self._niveau
 
     @property
     def get_vie(self):
-        return self.__vie
+        return self._vie
+
+    @property
+    def get_xp(self):
+        return self._xp
+    
+    @property
+    def get_piece(self):
+        return self._piece
 
     @property
     def get_inventaire(self):
-        return self.__inventaire
+        return self._inventaire
 
     def RecupererObject(self, objet):
         if(objet not in self._inventaire):
@@ -26,9 +41,9 @@ class Joueur:
 
 
     def AjouterNiveau(self):
-        if(self.__xp > 100):
-            self.__niveau += 1
-            self.__xp = 0        
+        if(self._xp > 100):
+            self._niveau += 1
+            self._xp = 0        
 
     def Attaquer(self, ennemi):
         distance = self.calculer_distance(ennemi._position)

@@ -3,7 +3,7 @@ from Audio import Audio
 from Joueur import Joueur
 
 class PauseMenu:
-    def __init__(self, window, idOfLoadedGame):
+    def __init__(self, window, idOfLoadedGame, joueurActif):
         """
         QUI: Nathan Isembaert & Anthony VERGEYLEN
         QUAND: 14-05-2024
@@ -11,6 +11,7 @@ class PauseMenu:
         """
         self.audio = Audio()
         self.idOfLoadedGame = idOfLoadedGame
+        self.joueurActif = joueurActif
             
         self.maxSaves = 3
         
@@ -155,17 +156,16 @@ class PauseMenu:
                                     if self.idOfLoadedGame in currentlySaves:
                                         del currentlySaves[self.idOfLoadedGame]
 
-                                    joueurActif = Joueur(0, 10)
                                     currentlySaves[self.idOfLoadedGame] = {
                                         "time": currentDateTime,
-                                        "level": joueurActif.niveau(),
+                                        "level": self.joueurActif.get_level,
                                         "player": {
                                             "position": {
-                                                "x": 9,
-                                                "y": 0
+                                                "x": self.joueurActif.get_position[0],
+                                                "y": self.joueurActif.get_position[1]
                                             },
-                                            "inventory": [],
-                                            "health": 100
+                                            "inventory": self.joueurActif.get_inventaire,
+                                            "health": self.joueurActif.get_vie
                                         }
                                     }
 
