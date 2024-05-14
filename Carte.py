@@ -1,14 +1,21 @@
+import json
 
 class carte:
-    def __init__(self, largeur, hauteur, decor, niveauCarte):
-        self.__largeur = largeur
-        self.hauteur = hauteur
-        self.decor = decor  # Fixed syntax error here
+    def __init__(self, map, niveauCarte):
+        self.__map = map #doit recevoir une liste de json des map
+        self.__niveauCarte = niveauCarte
 
-    def affichercarte(self, window):
-        import pygame  # Importing pygame within the function to ensure it's loaded when called
-        image = pygame.image.load(self.decor)
-        window.blit(image, (5, 580))
+    def charger_carte(self):
+        fichierMap = self.__map[self.__niveauCarte - 1]  # Sélectionne la carte suivante
+        with open(fichierMap, 'r') as fichierChargement:
+            mapActuelle = json.load(fichierChargement)
+            print("Chargement de la carte...")
+
+        print("map chargée.")
+        return mapActuelle
+
 
     def activercheckpoint(self):
         pass
+
+    
