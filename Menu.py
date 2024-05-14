@@ -32,8 +32,7 @@ class MenuPrincipal:
         self.button_margin = 5  # Margin for the black background
         self.button_spacing = 20  # Additional spacing between buttons
 
-        # save_slots = []
-        save_slots = ["2", "3", "4", "5", "6"]
+        save_slots = [] # (eg. ["1", "2", "3"])
 
         # Calculate the starting y position to center all buttons
         total_button_height = (self.button_height + self.button_margin + self.button_spacing) * (2 + len(save_slots)) - self.button_spacing
