@@ -1,66 +1,132 @@
 {
-  "taille": [96, 54],
+  "taille": [
+    96,
+    54
+  ],
   "niveau": 1,
   "decor": "assets/img/map1.jpg",
   "music": "",
   "elements": [
     {
       "type": "mur",
-      "position": [76, 0],
-      "taille": [1, 54]
+      "position": [
+        1,
+        0
+      ],
+      "taille": [
+        1,
+        54
+      ]
     },
     {
       "type": "mur",
-      "position": [0, 0],
-      "taille": [1, 54]
+      "position": [
+        0,
+        0
+      ],
+      "taille": [
+        1,
+        54
+      ]
     },
     {
       "type": "sol",
-      "position": [0, 38],
-      "taille": [96, 20]
+      "position": [
+        0,
+        48
+      ],
+      "taille": [
+        96,
+        20
+      ]
     },
     {
       "type": "sol",
-      "position": [7, 35],
-      "taille": [23, 10]
+      "position": [
+        7,
+        44
+      ],
+      "taille": [
+        23,
+        10
+      ]
     },
     {
       "type": "sol",
-      "position": [65, 35],
-      "taille": [23, 10]
+      "position": [
+        65,
+        44
+      ],
+      "taille": [
+        23,
+        10
+      ]
     },
     {
       "type": "sol",
-      "position": [62, 36.5],
-      "taille": [3, 5]
+      "position": [
+        62,
+        46
+      ],
+      "taille": [
+        3,
+        5
+      ]
     },
     {
       "type": "sol",
-      "position": [29, 36.5],
-      "taille": [3, 5]
+      "position": [
+        29,
+        46
+      ],
+      "taille": [
+        3,
+        5
+      ]
     },
     {
       "type": "sol",
-      "position": [5, 36.5],
-      "taille": [3, 5]
+      "position": [
+        5,
+        46
+      ],
+      "taille": [
+        3,
+        5
+      ]
     },
     {
       "type": "sol",
-      "position": [65, 35],
-      "taille": [23, 10]
+      "position": [
+        65,
+        46
+      ],
+      "taille": [
+        23,
+        10
+      ]
     },
     {
       "type": "joueur",
-      "position": [8, 29],
-      "taille": [3, 6]
+      "position": [
+        8,
+        38
+      ],
+      "taille": [
+        3,
+        6
+      ]
     },
     {
-      "type":"ennemi",
-      "position" : [68, 29],
-      "taille": [3, 6]
+      "type": "ennemi",
+      "position": [
+        68,
+        29
+      ],
+      "taille": [
+        3,
+        6
+      ]
     }
   ]
 }
-
-
-  
