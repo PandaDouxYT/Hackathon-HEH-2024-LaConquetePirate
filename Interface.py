@@ -4,6 +4,7 @@ import json
 from PauseMenu import PauseMenu
 from Joueur import Joueur
 from Personnage import Personnage
+from Carte import Carte
 
 class Interface:
     def __init__(self, window, idOfLoadedGame=None):
@@ -319,3 +320,41 @@ class Interface:
         
         # Afficher le nom de l'ennemi
         self.window.blit(text, (text_x, text_y))
+
+    def afficher_carte(self):
+        mesCarte = Carte(["map/carte1.json", "map/carte2.json"], 1)
+        mapActuelle = mesCarte.charger_carte()
+        print("Affichage de la carte...")
+
+        taille_case = 20  # Taille d'une case en pixels
+
+        # Charger le décor
+        decor_path = os.path.join(mapActuelle["decor"])
+        decor_image = pygame.image.load(decor_path)
+        decor_image = pygame.transform.scale(decor_image, (mapActuelle["taille"][0] * taille_case, mapActuelle["taille"][1] * taille_case))  
+
+        # Afficher la carte
+        self.window.blit(decor_image, (0, self.window.get_height() - decor_image.get_height()))
+
+        elementCollision = ["mur", "sol"]
+
+        # Dessiner les éléments de la carte
+        for element in mapActuelle["elements"]:
+            position = (element["position"][0] * taille_case, element["position"][1] * taille_case)
+            if element["type"] in elementCollision:
+                # Dessiner les éléments de collision
+                taille = (element["taille"][0] * taille_case, element["taille"][1] * taille_case)
+                pygame.draw.rect(self.window, (0, 0, 0) if element["type"] == "mur" or "sol" else (255, 255, 255), pygame.Rect(position, taille))
+                
+            elif element["type"] == "trou":
+                rayon = taille_case // 2
+                pygame.draw.circle(self.window, (0, 0, 0), (position[0] + rayon, position[1] + rayon), rayon)
+            elif element["type"] == "porte":
+                taille_porte = (taille_case // 2, taille_case * 2)
+                pygame.draw.rect(self.window, (100, 50, 0), pygame.Rect(position, taille_porte))
+            elif element["type"] == "ennemi":
+                taille_ennemi = (element["taille"][0] * taille_case, element["taille"][1] * taille_case)
+                pygame.draw.rect(self.window, (255, 0, 0), pygame.Rect(position, taille_ennemi))
+            elif element["type"] == "joueur":
+                taille_joueur = (element["taille"][0] * taille_case, element["taille"][1] * taille_case)
+                pygame.draw.rect(self.window, (0, 255, 0), pygame.Rect(position, taille_joueur))
