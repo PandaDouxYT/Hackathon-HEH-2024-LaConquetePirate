@@ -17,8 +17,26 @@ class Interface:
         self.font = pygame.font.Font(None, 36)
         self.idOfLoadedGame = idOfLoadedGame
 
+        with open("map/carte1.json", "r") as f:
+            map_data = json.load(f)
+
+        # Initialize player's position
+        player_position = None
+
+        # Iterate through elements to find the player
+        for element in map_data['elements']:
+            if element['type'] == 'joueur':
+                player_position = element['position']
+                break
+
+        # Output the player's position
+        if player_position:
+            print(f"Player's position: x = {player_position[0]}, y = {player_position[1]}")
+        else:
+            print("Player not found in the map.")
+
         personnage = Personnage("Capitaine Melon")
-        self.joueurActif = Joueur(personnage)
+        self.joueurActif = Joueur(personnage, player_position[0]*20, player_position[1]*20)
         self.idOfActivePlayer = "1"
 
         self.vieJoueur = self.joueurActif.get_vie
@@ -32,15 +50,53 @@ class Interface:
         # Gestionnaire de temps pour contrôler le taux de rafraîchissement
         self.clock = pygame.time.Clock()
 
+        # Charger la carte et les images une fois
+        self.background_surface = None
+        self.carte = self.charger_carte()
+
         print("Interface initialisée")
-        
+
+    def charger_carte(self):
+        print("Chargement de la carte...")
+        mesCarte = Carte(["map/carte1.json", "map/carte2.json"], 1)
+        mapActuelle = mesCarte.charger_carte()
+        print("Carte chargée...")
+
+        taille_case = 20  # Taille d'une case en pixels
+
+        # Charger le décor
+        decor_path = os.path.join(mapActuelle["decor"])
+        decor_image = pygame.image.load(decor_path)
+        decor_image = pygame.transform.scale(decor_image, (mapActuelle["taille"][0] * taille_case, mapActuelle["taille"][1] * taille_case))
+
+        # Créer une surface de fond
+        self.background_surface = pygame.Surface((self.window.get_width(), self.window.get_height()))
+        self.background_surface.fill((73, 140, 255))
+        self.background_surface.blit(decor_image, (0, self.window.get_height() - decor_image.get_height()))
+
+        # Pré-calculer les positions et tailles des éléments
+        elements = []
+        elementCollision = ["mur", "sol"]
+        for element in mapActuelle["elements"]:
+            position = (element["position"][0] * taille_case, self.window.get_height() - element["position"][1] * taille_case)
+            taille = (element["taille"][0] * taille_case, element["taille"][1] * taille_case)
+            position = (position[0], position[1] - taille[1])
+            elements.append((element["type"], position, taille))
+
+        return {"elements": elements}
+
     def draw(self):
         """
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Dessine l'interface principale du jeu
         """
-        self.window.fill((0, 0, 0))
+
+        if self.background_surface:
+            self.window.blit(self.background_surface, (0, 0))
+
+        self.afficher_carte()
+
         self.afficher_joueur_actif()
         self.afficher_barre_vie(self.vieJoueur)
         self.afficher_nombre_piece(self.pieceJoueur)
@@ -69,11 +125,31 @@ class Interface:
         
         pygame.display.update()
 
+    def afficher_carte(self):
+        print("Affichage de la carte...")
+
+        elementCollision = ["mur", "sol"]
+
+        # Dessiner les éléments de la carte
+        for element_type, position, taille in self.carte["elements"]:
+            if element_type in elementCollision:
+                pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
+            elif element_type == "trou":
+                rayon = taille[0] // 2
+                pygame.draw.circle(self.window, (0, 0, 0), (position[0] + rayon, position[1] + rayon), rayon)
+            elif element_type == "porte":
+                taille_porte = (taille[0] // 2, taille[1] * 2)
+                pygame.draw.rect(self.window, (100, 50, 0), pygame.Rect(position, taille_porte))
+            elif element_type == "ennemi":
+                pygame.draw.rect(self.window, (255, 0, 0), pygame.Rect(position, taille))
+            # elif element_type == "joueur":
+            #     pygame.draw.rect(self.window, (0, 255, 0), pygame.Rect(position, taille))
+
     def effacer_zone(self, x, y, width, height):
         """
         Efface la zone spécifiée en la remplissant avec la couleur de fond de la fenêtre.
         """
-        self.window.fill((0, 0, 0), (x, y, width, height))
+        self.window.fill((73, 140, 255), (x, y, width, height))
     
     def run(self):
         """
@@ -112,6 +188,7 @@ class Interface:
                         self.keys['left'] = False
                     elif event.key == pygame.K_d:
                         self.keys['right'] = False
+                
 
             if self.keys['left']:
                 self.joueurActif.deplacer_gauche()
@@ -128,6 +205,7 @@ class Interface:
                     self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
 
             self.draw()
+
 
     def afficher_joueur_actif(self):
         """

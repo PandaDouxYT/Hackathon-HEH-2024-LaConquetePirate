@@ -4,13 +4,13 @@
     54
   ],
   "niveau": 1,
-  "decor": "assets/img/map1.jpg",
+  "decor": "assets/img/map1.png",
   "music": "",
   "elements": [
     {
       "type": "mur",
       "position": [
-        1,
+        96,
         0
       ],
       "taille": [
@@ -33,84 +33,73 @@
       "type": "sol",
       "position": [
         0,
-        48
+        0
       ],
       "taille": [
         96,
-        20
+        5.5
       ]
     },
     {
       "type": "sol",
       "position": [
         7,
-        44
+        0
       ],
       "taille": [
         23,
-        10
+        8.5
       ]
     },
     {
       "type": "sol",
       "position": [
         65,
-        44
+        0
       ],
       "taille": [
-        23,
-        10
+        22,
+        8.5
       ]
     },
     {
       "type": "sol",
       "position": [
         62,
-        46
+        0
       ],
       "taille": [
         3,
-        5
+        7
       ]
     },
     {
       "type": "sol",
       "position": [
         29,
-        46
+        0
       ],
       "taille": [
         3,
-        5
+        7
       ]
     },
     {
       "type": "sol",
       "position": [
         5,
-        46
+        0
       ],
       "taille": [
         3,
-        5
-      ]
-    },
-    {
-      "type": "sol",
-      "position": [
-        65,
-        46
-      ],
-      "taille": [
-        23,
-        10
+        7
       ]
     },
     {
       "type": "joueur",
       "position": [
-        8,
-        38
+        10,
+        8.5
       ],
       "taille": [
         3,
@@ -120,8 +109,8 @@
     {
       "type": "ennemi",
       "position": [
-        68,
-        29
+        80,
+        8.5
       ],
       "taille": [
         3,

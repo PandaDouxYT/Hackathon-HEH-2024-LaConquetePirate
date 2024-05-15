@@ -1,8 +1,7 @@
 import pygame
-import os
 
 class Joueur:
-    def __init__(self, personnage, vie=100, inventaire=[], xp=10, niveau=0, piece=0):
+    def __init__(self, personnage, xJoueur, yJoueur, vie=100, inventaire=[], xp=10, niveau=0, piece=0):
         self._vie = vie
         self._inventaire = inventaire
         self._niveau = niveau
@@ -34,8 +33,8 @@ class Joueur:
         self._facing_right = True  # Indicates the direction the character is facing
 
         # Set initial position
-        self._x = 0
-        self._y = 0
+        self._x = xJoueur
+        self._y = yJoueur
 
         # Display character at initial position
         self.afficherPersonnage(self._x, self._y)

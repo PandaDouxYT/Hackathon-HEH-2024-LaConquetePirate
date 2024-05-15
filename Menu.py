@@ -25,6 +25,12 @@ class MenuPrincipal:
         )
         self.window.blit(background, (0, 0))
 
+        basicLogoWidth = 250
+        self.logo = pygame.image.load(os.path.join("assets", "img", "logoheh.png"))
+        self.logo = pygame.transform.scale(self.logo, (basicLogoWidth, int(basicLogoWidth * self.logo.get_height() / self.logo.get_width())))
+        self.logo_rect = self.logo.get_rect(topright=(self.window_width - 10, 10))
+        self.window.blit(self.logo, self.logo_rect)
+
         fontTitle = pygame.font.SysFont(None, 80)
 
         # Render title text in white
