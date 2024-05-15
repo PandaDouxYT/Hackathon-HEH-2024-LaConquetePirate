@@ -293,7 +293,10 @@ class Interface:
 
         # Dessiner les éléments de la carte
         for element in mapActuelle["elements"]:
-            position = (element["position"][0] * taille_case, element["position"][1] * taille_case)
+            # Calculer la position en bas à gauche
+            position = (element["position"][0] * taille_case, self.window.get_height() - element["position"][1] * taille_case)
+            taille = (element["taille"][0] * taille_case, element["taille"][1] * taille_case)
+            position = (position[0], position[1] - taille[1])  # Ajuster pour que le point d'ancrage soit en bas à gauche
             if element["type"] in elementCollision:
                 # Dessiner les éléments de collision
                 taille = (element["taille"][0] * taille_case, element["taille"][1] * taille_case)
