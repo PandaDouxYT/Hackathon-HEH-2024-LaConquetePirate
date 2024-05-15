@@ -1,0 +1,121 @@
+{
+  "taille": [
+    96,
+    54
+  ],
+  "niveau": 1,
+  "decor": "assets/img/map1.png",
+  "music": "",
+  "elements": [
+    {
+      "type": "mur",
+      "position": [
+        96,
+        0
+      ],
+      "taille": [
+        1,
+        54
+      ]
+    },
+    {
+      "type": "mur",
+      "position": [
+        0,
+        0
+      ],
+      "taille": [
+        1,
+        54
+      ]
+    },
+    {
+      "type": "sol",
+      "position": [
+        0,
+        0
+      ],
+      "taille": [
+        96,
+        5.5
+      ]
+    },
+    {
+      "type": "sol",
+      "position": [
+        7,
+        0
+      ],
+      "taille": [
+        23,
+        8.5
+      ]
+    },
+    {
+      "type": "sol",
+      "position": [
+        65,
+        0
+      ],
+      "taille": [
+        22,
+        8.5
+      ]
+    },
+    {
+      "type": "sol",
+      "position": [
+        62,
+        0
+      ],
+      "taille": [
+        3,
+        7
+      ]
+    },
+    {
+      "type": "sol",
+      "position": [
+        29,
+        0
+      ],
+      "taille": [
+        3,
+        7
+      ]
+    },
+    {
+      "type": "sol",
+      "position": [
+        5,
+        0
+      ],
+      "taille": [
+        3,
+        7
+      ]
+    },
+    {
+      "type": "joueur",
+      "position": [
+        10,
+        8.5
+      ],
+      "taille": [
+        3,
+        6
+      ]
+    },
+    {
+      "type": "ennemi",
+      "position": [
+        80,
+        8.5
+      ],
+      "taille": [
+        3,
+        6
+      ]
+    }
+  ]
+}
