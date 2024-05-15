@@ -5,7 +5,7 @@ class Ennemi(Personnage):
     
     def __init__(self, nom, vie, degats, position, inventaire, schemaAttaque):
         self.__schemaAttaque = schemaAttaque
-        super().__init__(nom, vie, degats, position, inventaire)
+        super().__init__(nom)
 
 
 

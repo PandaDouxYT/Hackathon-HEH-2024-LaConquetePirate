@@ -16,9 +16,8 @@ class Interface:
 
         personnage = Personnage("Capitaine Melon")
         self.joueurActif = Joueur(personnage)
-        ennemi = Ennemi( "Goblin", 100, 20, [100, 200], [], 1)
-        self.ennemiActif = Ennemi(ennemi)
-
+        self.ennemiActif = Ennemi( "Goblin", 100, 20, [100, 200], [], 1)
+        
         print("Interface initialisée")
         
     def draw(self):
@@ -279,9 +278,9 @@ class Interface:
         # Charge l'image de l'ennemi
         image_path = f'assets/img/en1.gif'
         ennemi_image = pygame.image.load(image_path)
-        ennemi_image = pygame.transform.scale(ennemi_image, (50, 50))
+        #ennemi_image = pygame.transform.scale(ennemi_image, (50, 70))
 
         # Position de l'image de l'ennemi
-        self.window.blit(ennemi_image, (self.ennemiActif._position[50], self.ennemiActif._position[70]))
+        self.window.blit(ennemi_image, (self.ennemiActif._position[0], self.ennemiActif._position[1]))
 
 
