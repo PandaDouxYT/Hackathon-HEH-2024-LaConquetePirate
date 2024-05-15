@@ -1,7 +1,7 @@
 import pygame
 import Joueur
 
-class objet:
+class Objet:
     def __init__(self, nom, type):
         self.__nom = nom
         self.__type = type

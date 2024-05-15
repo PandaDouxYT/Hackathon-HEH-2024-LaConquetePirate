@@ -1,11 +1,10 @@
 from Personnage import Personnage
-
+from Objet import Objet
 
 class Ennemi(Personnage):
     
     def __init__(self, nom, vie, degats, position, inventaire, schemaAttaque):
         self.__schemaAttaque = schemaAttaque
-        self.objet = Objet()
         super().__init__(nom, vie, degats, position, inventaire)
 
 
@@ -40,7 +39,7 @@ class Ennemi(Personnage):
             print("Votre schéma d'attaque n'existe pas")
 
         return attaquer
-        
+
 
     def attaque(self, joueur):
         distance = self.calculer_distance(joueur._position)
@@ -60,7 +59,7 @@ class Ennemi(Personnage):
 
     def verifier_mort(self):
             if self._vie <= 0:
-                objet_lache = self.objet.lacher_objet()
+                objet_lache = Objet.lacher_objet()
                 if objet_lache:
                     print(f"L'ennemi a lâché un(e) {objet_lache}.")
                     return objet_lache

@@ -2,6 +2,7 @@ import pygame, os, json
 from PauseMenu import PauseMenu
 from Joueur import Joueur
 from Personnage import Personnage
+from Ennemi import Ennemi
 class Interface:
     def __init__(self, window, idOfLoadedGame=None):
         """
@@ -15,6 +16,8 @@ class Interface:
 
         personnage = Personnage("Capitaine Melon")
         self.joueurActif = Joueur(personnage)
+        ennemi = Ennemi( "Goblin", 100, 20, [100, 200], [], 1)
+        self.ennemiActif = Ennemi(ennemi)
 
         print("Interface initialisée")
         
@@ -30,6 +33,7 @@ class Interface:
         self.afficher_nombre_piece(self.joueurActif.get_piece)
         self.afficher_nombre_experience(self.joueurActif.get_xp)
         self.afficher_nombre_level(self.joueurActif.get_level)
+        self.afficher_ennemi()
         if self.idOfLoadedGame:
             window_width = self.window.get_width()
             window_height = self.window.get_height()
@@ -270,3 +274,14 @@ class Interface:
         
         # Afficher le nom de l'ennemi
         self.window.blit(text, (text_x, text_y))
+
+    def afficher_ennemi(self):
+        # Charge l'image de l'ennemi
+        image_path = f'assets/img/en1.gif'
+        ennemi_image = pygame.image.load(image_path)
+        ennemi_image = pygame.transform.scale(ennemi_image, (50, 50))
+
+        # Position de l'image de l'ennemi
+        self.window.blit(ennemi_image, (self.ennemiActif._position[50], self.ennemiActif._position[70]))
+
+
