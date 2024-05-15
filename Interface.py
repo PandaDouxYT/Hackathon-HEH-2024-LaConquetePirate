@@ -4,6 +4,7 @@ import json
 from PauseMenu import PauseMenu
 from Joueur import Joueur
 from Personnage import Personnage
+from Ennemi import Ennemi
 from Carte import Carte
 
 class Interface:
@@ -16,6 +17,7 @@ class Interface:
         self.window = window
         self.font = pygame.font.Font(None, 36)
         self.idOfLoadedGame = idOfLoadedGame
+        
 
         with open("map/carte1.json", "r") as f:
             map_data = json.load(f)
@@ -38,6 +40,7 @@ class Interface:
         personnage = Personnage("Capitaine Melon")
         self.joueurActif = Joueur(personnage, player_position[0]*20, player_position[1]*20)
         self.idOfActivePlayer = "1"
+        self.ennemiActif = Ennemi("Goblin", 100, 20, [100, 200], [], 1)
 
         self.vieJoueur = self.joueurActif.get_vie
         self.xpJoueur = self.joueurActif.get_xp
@@ -102,6 +105,7 @@ class Interface:
         self.afficher_nombre_piece(self.pieceJoueur)
         self.afficher_nombre_experience(self.xpJoueur)
         self.afficher_nombre_level(self.levelJoueur)
+        self.afficher_ennemi()
 
         self.joueurActif.mettre_a_jour_position()  # Mise à jour de la position du joueur
 
@@ -397,3 +401,12 @@ class Interface:
         
         # Afficher le nom de l'ennemi
         self.window.blit(text, (text_x, text_y))
+        
+    def afficher_ennemi(self):
+        # Charge l'image de l'ennemi
+        image_path = f'assets/img/en1.gif'
+        ennemi_image = pygame.image.load(image_path)
+        ennemi_image = pygame.transform.scale(ennemi_image, (90, 150))
+
+        # Position de l'image de l'ennemi
+        self.window.blit(ennemi_image, (self.ennemiActif._position[0], self.ennemiActif._position[1]))
