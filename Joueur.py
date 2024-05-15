@@ -18,12 +18,19 @@ class Joueur:
         return self._niveau
 
     @property
-    def get_vie(self):
-        return self._vie
+    def get_vie(self, valeur):
+        if valeur > 0:
+            self.__vie = valeur
+        else:
+            self.__vie = 0
+            print("Le joueur est mort.")
+        print(f"Vie actuelle: {self.__vie}")
 
     def modifier_vie(self, quantite):
         self.vie += quantite
-        return self.vie
+        if self.__vie < 0:
+            self.__vie = 0
+            print("Le joueur est mort.")
 
     @property
     def get_xp(self):
@@ -58,17 +65,25 @@ class Joueur:
 
     def Attaquer(self, ennemi):
         distance = self.calculer_distance(ennemi._position)
-        if(self._type == "longueDistance"):
-            if(distance >= 10):
-                ennemi._vie -= self._degats
 
-        elif(self._type == "midDistande"):
-            if(5 <= distance < 10):
-                ennemi._vie -= self._degats
-
-        elif(self._type == "courteDistande"):
-            if(distance < 5):
-                ennemi._vie -= self._degats
+        if self._type == "longueDistance":
+            if distance >= 10:
+                if 'arc' in self.__inventaire:
+                    ennemi._vie -= 2 * self._degats
+                else:
+                    ennemi._vie -= self._degats
+        elif self._type == "midDistance":
+            if 5 <= distance < 10:
+                if 'hache' in self.__inventaire:
+                    ennemi._vie -= 2 * self._degats
+                else:
+                    ennemi._vie -= self._degats
+        elif self._type == "courteDistance":
+            if distance < 5:
+                if 'epee' in self.__inventaire:
+                    ennemi._vie -= 2 * self._degats
+                else:
+                    ennemi._vie -= self._degats
 
 
     def ChangerPersonnage(self):
