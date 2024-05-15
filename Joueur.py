@@ -21,6 +21,13 @@ class Joueur:
     def get_vie(self):
         return self._vie
 
+
+    def modifier_vie(self, quantite):
+        self.vie += quantite
+        if self.__vie < 0:
+            self.__vie = 0
+            print("Le joueur est mort.")
+
     @property
     def get_xp(self):
         return self._xp
