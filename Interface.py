@@ -1,6 +1,7 @@
 import pygame, os, json
 from PauseMenu import PauseMenu
-
+from Joueur import Joueur
+from Personnage import Personnage
 class Interface:
     def __init__(self, window, idOfLoadedGame=None):
         """
@@ -12,6 +13,9 @@ class Interface:
         self.font = pygame.font.Font(None, 36)
         self.idOfLoadedGame = idOfLoadedGame
 
+        personnage = Personnage("Capitaine Melon")
+        self.joueurActif = Joueur(personnage)
+
         print("Interface initialisée")
         
     def draw(self):
@@ -22,10 +26,10 @@ class Interface:
         """
         self.window.fill((0, 0, 0))
         self.afficher_joueur_actif("1")
-        self.afficher_barre_vie(100)
-        self.afficher_nombre_piece()
-        self.afficher_nombre_experience()
-        self.afficher_nombre_level()
+        self.afficher_barre_vie(self.joueurActif.get_vie)
+        self.afficher_nombre_piece(self.joueurActif.get_piece)
+        self.afficher_nombre_experience(self.joueurActif.get_xp)
+        self.afficher_nombre_level(self.joueurActif.get_level)
         if self.idOfLoadedGame:
             window_width = self.window.get_width()
             window_height = self.window.get_height()
@@ -70,7 +74,7 @@ class Interface:
                     exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        pause_menu = PauseMenu(self.window, self.idOfLoadedGame)
+                        pause_menu = PauseMenu(self.window, self.idOfLoadedGame, self.joueurActif)
                         pause_menu.run()
 
             self.draw()
