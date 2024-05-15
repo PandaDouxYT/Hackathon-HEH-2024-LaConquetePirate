@@ -10,7 +10,7 @@
     {
       "type": "mur",
       "position": [
-        96,
+        92.8,
         0
       ],
       "taille": [
@@ -21,12 +21,23 @@
     {
       "type": "mur",
       "position": [
-        0,
+        -1,
         0
       ],
       "taille": [
         1,
         54
+      ]
+    },
+    {
+      "type": "mur",
+      "position": [
+        50,
+        20
+      ],
+      "taille": [
+        1,
+        20
       ]
     },
     {
@@ -37,62 +48,7 @@
       ],
       "taille": [
         96,
-        5.5
-      ]
-    },
-    {
-      "type": "sol",
-      "position": [
-        7,
-        0
-      ],
-      "taille": [
-        23,
-        8.5
-      ]
-    },
-    {
-      "type": "sol",
-      "position": [
-        65,
-        0
-      ],
-      "taille": [
-        22,
-        8.5
-      ]
-    },
-    {
-      "type": "sol",
-      "position": [
-        62,
-        0
-      ],
-      "taille": [
-        3,
-        7
-      ]
-    },
-    {
-      "type": "sol",
-      "position": [
-        29,
-        0
-      ],
-      "taille": [
-        3,
-        7
-      ]
-    },
-    {
-      "type": "sol",
-      "position": [
-        5,
-        0
-      ],
-      "taille": [
-        3,
-        7
+        5
       ]
     },
     {

@@ -32,9 +32,13 @@ class Joueur:
 
         self._facing_right = True  # Indicates the direction the character is facing
 
+        self.width = 40  # Set appropriate width
+        self.height = 90
         # Set initial position
         self._x = xJoueur
         self._y = yJoueur
+
+        self.rect = pygame.Rect(self._x, self._y, self.width, self.height)
 
         # Display character at initial position
         self.afficherPersonnage(self._x, self._y)
@@ -44,7 +48,13 @@ class Joueur:
         original_width, original_height = image.get_size()
         new_height = int((new_width / original_width) * original_height)
         return pygame.transform.scale(image, (new_width, new_height))
-
+    
+    def get_rect(self):
+        return self.rect
+    
+    def update_rect(self):
+        self.rect.topleft = (self._x, self._y)
+    
     def afficherPersonnage(self, x, y):
         window = pygame.display.get_surface()
         
@@ -157,18 +167,26 @@ class Joueur:
             self._move_images = [pygame.transform.flip(image, True, False) for image in self._move_images]
 
     def deplacer_gauche(self):
+        print("Déplacement à gauche")
+        print("x", self._x)
+        print("y", self._y)
         self._x -= 5  # Déplace le joueur de 5 pixels à gauche
         self.mettre_a_jour_position()
         if self._facing_right:
             self.inverser_direction()
         self.animer_marche()
+        self.update_rect()
 
     def deplacer_droite(self):
+        print("Déplacement à gauche")
+        print("x", self._x)
+        print("y", self._y)
         self._x += 5  # Déplace le joueur de 5 pixels à droite
         self.mettre_a_jour_position()
         if not self._facing_right:
             self.inverser_direction()
         self.animer_marche()
+        self.update_rect()
 
     def inverser_direction(self):
         self._facing_right = not self._facing_right
@@ -181,3 +199,24 @@ class Joueur:
             self._animation_index = (self._animation_index + 1) % len(self._move_images)
             self._current_image = self._move_images[self._animation_index]
             self._animation_time = current_time
+
+    def appliquerGravite(self, elements):
+        # if not self._saut_en_cours:
+        #     self._y += self._gravite
+        #     for element_type, position, taille in elements:
+        #         if element_type == "sol" and self.verifier_collision_sol(position, taille):
+        #             self._y = position[1] - self.height
+        #             break
+        # self.update_rect()
+        pass
+
+    def verifier_collision_sol(self, position, taille):
+        element_rect = pygame.Rect(position, taille)
+        player_rect = self.get_rect()
+        return player_rect.colliderect(element_rect)
+
+
+    def set_position(self, x, y):
+        self._x = x
+        self._y = y
+        self.update_rect()

@@ -36,26 +36,24 @@ class Interface:
             print("Player not found in the map.")
 
         personnage = Personnage("Capitaine Melon")
-        self.joueurActif = Joueur(personnage, player_position[0]*20, player_position[1]*20)
-        self.idOfActivePlayer = "1"
+        self.joueurActif = Joueur(personnage, player_position[0] * 20, player_position[1] * 20 + 100)
+        
+        # Place the player directly on the ground based on initial map position
 
+        self.idOfActivePlayer = "1"
         self.vieJoueur = self.joueurActif.get_vie
         self.xpJoueur = self.joueurActif.get_xp
         self.pieceJoueur = self.joueurActif.get_piece
         self.levelJoueur = self.joueurActif.get_level
 
-        # Suivre l'état des touches
         self.keys = {'left': False, 'right': False}
-
-        # Gestionnaire de temps pour contrôler le taux de rafraîchissement
         self.clock = pygame.time.Clock()
-
-        # Charger la carte et les images une fois
         self.background_surface = None
         self.carte = self.charger_carte()
-
+        print("Carte chargée...")
+        print(self.carte)
         print("Interface initialisée")
-
+    
     def charger_carte(self):
         print("Chargement de la carte...")
         mesCarte = Carte(["map/carte1.json", "map/carte2.json"], 1)
@@ -76,14 +74,21 @@ class Interface:
 
         # Pré-calculer les positions et tailles des éléments
         elements = []
-        elementCollision = ["mur", "sol"]
+
         for element in mapActuelle["elements"]:
-            position = (element["position"][0] * taille_case, self.window.get_height() - element["position"][1] * taille_case)
-            taille = (element["taille"][0] * taille_case, element["taille"][1] * taille_case)
-            position = (position[0], position[1] - taille[1])
-            elements.append((element["type"], position, taille))
+            element_type = element["type"]
+            position = element["position"]
+            taille = element["taille"]
+
+            x = position[0] * taille_case
+            y = position[1] * taille_case
+
+            taille = (taille[0] * taille_case, taille[1] * taille_case)
+
+            elements.append((element_type, (x, y), taille))
 
         return {"elements": elements}
+
 
     def draw(self):
         """
@@ -126,14 +131,15 @@ class Interface:
         pygame.display.update()
 
     def afficher_carte(self):
-        print("Affichage de la carte...")
+        # print("Affichage de la carte...")
 
         elementCollision = ["mur", "sol"]
 
         # Dessiner les éléments de la carte
         for element_type, position, taille in self.carte["elements"]:
             if element_type in elementCollision:
-                pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
+                # print(f"Drawing {element_type} at {position} with size {taille}")
+                pygame.draw.rect(self.window, (0, 0, 200), pygame.Rect(position, taille))
             elif element_type == "trou":
                 rayon = taille[0] // 2
                 pygame.draw.circle(self.window, (0, 0, 0), (position[0] + rayon, position[1] + rayon), rayon)
@@ -188,22 +194,55 @@ class Interface:
                         self.keys['left'] = False
                     elif event.key == pygame.K_d:
                         self.keys['right'] = False
-                
 
+            # Update player's position based on input
             if self.keys['left']:
                 self.joueurActif.deplacer_gauche()
             if self.keys['right']:
                 self.joueurActif.deplacer_droite()
-            
+
             # Gestion du saut
             if self.joueurActif._saut_en_cours:
                 self.joueurActif._y -= self.joueurActif._vitesse_actuelle_saut
                 self.joueurActif._vitesse_actuelle_saut += self.joueurActif._gravite
-                if self.joueurActif._y <= 0:  # Supposons que la position y=0 est le sol
-                    self.joueurActif._y = 0
-                    self.joueurActif._saut_en_cours = False
-                    self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
+                # print(self.joueurActif._y)
+                # if self.joueurActif._y <= 0:  # Supposons que la position y=0 est le sol
+                #     self.joueurActif._y = 0
+                #     self.joueurActif._saut_en_cours = False
+                #     self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
 
+
+                
+                if self.joueurActif._vitesse_actuelle_saut >= 0:  # Start checking for landing when falling
+                    self.joueurActif._saut_en_cours = False
+
+            # Check for collisions with the map elements
+            player_rect = self.joueurActif.get_rect()
+            for element_type, position, taille in self.carte["elements"]:
+                element_rect = pygame.Rect(position, taille)
+                
+                if element_type in ["mur"] and player_rect.colliderect(element_rect):
+                    # Draw the wall in red when collision is detected
+                    pygame.draw.rect(self.window, (255, 0, 0), element_rect)
+
+                    print(f"Collision with {element_type}!")
+                    if self.keys['left']:
+                        self.joueurActif._x = element_rect.right
+                    elif self.keys['right']:
+                        self.joueurActif._x = element_rect.left - player_rect.width
+                # collision avec le sol
+                elif element_type in ["sol"] and player_rect.colliderect(element_rect):
+                    print(f"Collision with {element_type}!")
+                    if not self.joueurActif._saut_en_cours:  # Land only if not currently jumping
+                        self.joueurActif._y = element_rect.top - player_rect.height
+                        self.joueurActif._saut_en_cours = False
+                        self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
+
+            # Update the player's rectangle position after handling collisions
+            self.joueurActif.update_rect()
+            self.joueurActif.appliquerGravite(self.carte["elements"])
+            
+            # Redraw the game window
             self.draw()
 
 
