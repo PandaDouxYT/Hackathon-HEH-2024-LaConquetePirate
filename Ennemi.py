@@ -5,6 +5,7 @@ class Ennemi(Personnage):
     
     def __init__(self, nom, vie, degats, position, inventaire, schemaAttaque):
         self.__schemaAttaque = schemaAttaque
+        self.objet = Objet()
         super().__init__(nom, vie, degats, position, inventaire)
 
 
@@ -56,3 +57,13 @@ class Ennemi(Personnage):
         elif(self._type == "courteDistande"):
             if(distance < 5 and attaquer == True):
                 joueur._vie -= self._degats
+
+    def verifier_mort(self):
+            if self._vie <= 0:
+                objet_lache = self.objet.lacher_objet()
+                if objet_lache:
+                    print(f"L'ennemi a lâché un(e) {objet_lache}.")
+                    return objet_lache
+                else:
+                    print("L'ennemi n'a rien lâché.")
+                    return None

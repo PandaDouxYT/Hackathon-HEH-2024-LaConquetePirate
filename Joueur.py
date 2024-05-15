@@ -1,3 +1,4 @@
+from Personnage import Personnage
 class Joueur:
     def __init__(self, listePerso, inventaire, xp, niveau,vie = 100):
         self.__listePerso = listePerso
@@ -6,6 +7,7 @@ class Joueur:
         self.__niveau = niveau
         self.__xp = xp
         self.__hauteur_saut = 1.0
+        self.__type_arme = None
 
     @property
     def get_level(self):
@@ -53,17 +55,25 @@ class Joueur:
 
     def Attaquer(self, ennemi):
         distance = self.calculer_distance(ennemi._position)
-        if(self._type == "longueDistance"):
-            if(distance >= 10):
-                ennemi._vie -= self._degats
 
-        elif(self._type == "midDistande"):
-            if(5 <= distance < 10):
-                ennemi._vie -= self._degats
-
-        elif(self._type == "courteDistande"):
-            if(distance < 5):
-                ennemi._vie -= self._degats
+        if self._type == "longueDistance":
+            if distance >= 10:
+                if 'arc' in self.__inventaire:
+                    ennemi._vie -= 2 * self._degats
+                else:
+                    ennemi._vie -= self._degats
+        elif self._type == "midDistance":
+            if 5 <= distance < 10:
+                if 'hache' in self.__inventaire:
+                    ennemi._vie -= 2 * self._degats
+                else:
+                    ennemi._vie -= self._degats
+        elif self._type == "courteDistance":
+            if distance < 5:
+                if 'epee' in self.__inventaire:
+                    ennemi._vie -= 2 * self._degats
+                else:
+                    ennemi._vie -= self._degats
 
 
     def ChangerPersonnage(self):
