@@ -1,6 +1,6 @@
 import json
 
-class carte:
+class Carte:
     def __init__(self, map, niveauCarte):
         self.__map = map #doit recevoir une liste de json des map
         self.__niveauCarte = niveauCarte
