@@ -20,6 +20,11 @@ class Interface:
         self.joueurActif = Joueur(personnage)
         self.idOfActivePlayer = "1"
 
+        self.vieJoueur = self.joueurActif.get_vie
+        self.xpJoueur = self.joueurActif.get_xp
+        self.pieceJoueur = self.joueurActif.get_piece
+        self.levelJoueur = self.joueurActif.get_level
+
         # Suivre l'état des touches
         self.keys = {'left': False, 'right': False}
 
@@ -36,10 +41,10 @@ class Interface:
         """
         self.window.fill((0, 0, 0))
         self.afficher_joueur_actif()
-        self.afficher_barre_vie(self.joueurActif.get_vie)
-        self.afficher_nombre_piece(self.joueurActif.get_piece)
-        self.afficher_nombre_experience(self.joueurActif.get_xp)
-        self.afficher_nombre_level(self.joueurActif.get_level)
+        self.afficher_barre_vie(self.vieJoueur)
+        self.afficher_nombre_piece(self.pieceJoueur)
+        self.afficher_nombre_experience(self.xpJoueur)
+        self.afficher_nombre_level(self.levelJoueur)
 
         self.joueurActif.mettre_a_jour_position()  # Mise à jour de la position du joueur
 
