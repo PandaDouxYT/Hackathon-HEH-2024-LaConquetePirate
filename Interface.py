@@ -1,7 +1,10 @@
-import pygame, os, json
+import pygame
+import os
+import json
 from PauseMenu import PauseMenu
 from Joueur import Joueur
 from Personnage import Personnage
+
 class Interface:
     def __init__(self, window, idOfLoadedGame=None):
         """
@@ -15,6 +18,13 @@ class Interface:
 
         personnage = Personnage("Capitaine Melon")
         self.joueurActif = Joueur(personnage)
+        self.idOfActivePlayer = "1"
+
+        # Suivre l'état des touches
+        self.keys = {'left': False, 'right': False}
+
+        # Gestionnaire de temps pour contrôler le taux de rafraîchissement
+        self.clock = pygame.time.Clock()
 
         print("Interface initialisée")
         
@@ -25,18 +35,18 @@ class Interface:
         QUOI: Dessine l'interface principale du jeu
         """
         self.window.fill((0, 0, 0))
-        self.afficher_joueur_actif("1")
+        self.afficher_joueur_actif()
         self.afficher_barre_vie(self.joueurActif.get_vie)
         self.afficher_nombre_piece(self.joueurActif.get_piece)
         self.afficher_nombre_experience(self.joueurActif.get_xp)
         self.afficher_nombre_level(self.joueurActif.get_level)
-        if self.idOfLoadedGame:
-            window_width = self.window.get_width()
-            window_height = self.window.get_height()
 
+        self.joueurActif.mettre_a_jour_position()  # Mise à jour de la position du joueur
+
+        if self.idOfLoadedGame:
             fontCredits = pygame.font.SysFont(None, 20)
             credits_surface = fontCredits.render('Vous jouez sur votre sauvegarde: #' + str(self.idOfLoadedGame), True, (255, 255, 255))
-            credits_rect = credits_surface.get_rect(center=(window_width - 140, window_height - 20))
+            credits_rect = credits_surface.get_rect(center=(self.window.get_width() - 140, self.window.get_height() - 20))
             self.window.blit(credits_surface, credits_rect)
         else:
             if os.path.exists("saves.json"):
@@ -51,7 +61,6 @@ class Interface:
                 currentlySaves = json.load(f)
                 self.idOfLoadedGame = len(currentlySaves) + 1
         
-
         pygame.display.update()
 
     def effacer_zone(self, x, y, width, height):
@@ -68,6 +77,7 @@ class Interface:
         """
         interface_active = True
         while interface_active:
+            self.clock.tick(60)  # Assure un taux de rafraîchissement de 60 FPS
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -76,11 +86,45 @@ class Interface:
                     if event.key == pygame.K_ESCAPE:
                         pause_menu = PauseMenu(self.window, self.idOfLoadedGame, self.joueurActif)
                         pause_menu.run()
+                    elif event.key == pygame.K_q:  # Déplacer à gauche
+                        self.keys['left'] = True
+                    elif event.key == pygame.K_d:  # Déplacer à droite
+                        self.keys['right'] = True
+                    elif event.key == pygame.K_SPACE:  # Déclencher le saut
+                        self.joueurActif.sauter()
+                    elif event.key == pygame.K_1:
+                        self.joueurActif.ChangerPersonnage(1)
+                        self.idOfActivePlayer = "1"
+                    elif event.key == pygame.K_2:
+                        self.joueurActif.ChangerPersonnage(2)
+                        self.idOfActivePlayer = "2"
+                    elif event.key == pygame.K_3:
+                        self.joueurActif.ChangerPersonnage(3)
+                        self.idOfActivePlayer = "3"
+                elif event.type == pygame.KEYUP:
+                    if event.key == pygame.K_q:
+                        self.keys['left'] = False
+                    elif event.key == pygame.K_d:
+                        self.keys['right'] = False
+
+            if self.keys['left']:
+                self.joueurActif.deplacer_gauche()
+            if self.keys['right']:
+                self.joueurActif.deplacer_droite()
+            
+            # Gestion du saut
+            if self.joueurActif._saut_en_cours:
+                self.joueurActif._y -= self.joueurActif._vitesse_actuelle_saut
+                self.joueurActif._vitesse_actuelle_saut += self.joueurActif._gravite
+                if self.joueurActif._y <= 0:  # Supposons que la position y=0 est le sol
+                    self.joueurActif._y = 0
+                    self.joueurActif._saut_en_cours = False
+                    self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
 
             self.draw()
-            pygame.time.wait(20)
 
-    def afficher_joueur_actif(self, idOfActivePlayer):
+
+    def afficher_joueur_actif(self):
         """
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
@@ -101,9 +145,9 @@ class Interface:
                 'unselected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur3_unselected.png"))
             }
         }
-        joueur1_img = joueur_imgs[1]['selected'] if idOfActivePlayer == "1" else joueur_imgs[1]['unselected']
-        joueur2_img = joueur_imgs[2]['selected'] if idOfActivePlayer == "2" else joueur_imgs[2]['unselected']
-        joueur3_img = joueur_imgs[3]['selected'] if idOfActivePlayer == "3" else joueur_imgs[3]['unselected']
+        joueur1_img = joueur_imgs[1]['selected'] if self.idOfActivePlayer == "1" else joueur_imgs[1]['unselected']
+        joueur2_img = joueur_imgs[2]['selected'] if self.idOfActivePlayer == "2" else joueur_imgs[2]['unselected']
+        joueur3_img = joueur_imgs[3]['selected'] if self.idOfActivePlayer == "3" else joueur_imgs[3]['unselected']
 
         # Positionnement des images
         joueur1_selected_x = 10
