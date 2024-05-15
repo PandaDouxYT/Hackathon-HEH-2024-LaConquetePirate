@@ -92,18 +92,14 @@ class PauseMenu:
         self.menu_active = True
         self.adjusting_volume = False
 
-        self.display_error_message = False
-        self.error_message_text = self.font.render(
-            "Vous avez atteint le maximum de sauvegardes. ("
-            + str(self.maxSaves)
-            + "/"
-            + str(self.maxSaves)
-            + ")",
+        self.display_sucess_message = False
+        self.sucess_message_text = self.font.render(
+            "Sauvegarde effectuée avec succès!",
             True,
-            (255, 0, 0),
+            (0, 255, 0),
         )
-        self.error_message_duration = 3000  # en millisecondes
-        self.error_message_start_time = 0
+        self.sucess_message_duration = 3000  # en millisecondes
+        self.sucess_message_start_time = 0
 
     def save_volume(self):
         """Enregistre la valeur du volume dans un fichier JSON"""
@@ -125,7 +121,6 @@ class PauseMenu:
         QUAND: 14-05-2024
         QUOI: Dessine le menu de pause à l'écran
         """
-
         # Dessiner un fond noir semi-transparent
         s = pygame.Surface(
             (self.window_width, self.window_height)
@@ -169,16 +164,15 @@ class PauseMenu:
         )
         pygame.draw.rect(self.window, (0, 122, 255), handle_rect, border_radius=10)
 
-        # Afficher le message d'erreur si nécessaire
-        if self.display_error_message:
-            elapsed_time = pygame.time.get_ticks() - self.error_message_start_time
-            if elapsed_time < self.error_message_duration:
-                error_message_rect = self.error_message_text.get_rect(
+        if self.display_sucess_message:
+            elapsed_time = pygame.time.get_ticks() - self.sucess_message_start_time
+            if elapsed_time < self.sucess_message_duration:
+                sucess_message_rect = self.sucess_message_text.get_rect(
                     center=(self.window_width // 2, self.menu_y + self.menu_height + 20)
                 )
-                self.window.blit(self.error_message_text, error_message_rect)
+                self.window.blit(self.sucess_message_text, sucess_message_rect)
             else:
-                self.display_error_message = False
+                self.display_sucess_message = False
 
         pygame.display.update()
 
@@ -206,7 +200,6 @@ class PauseMenu:
                                 from datetime import datetime
 
                                 print("Sauvegarde du jeu!...")
-
                                 # Charger les sauvegardes existantes ou initialiser un dictionnaire vide
                                 try:
                                     with open("saves.json", "r") as f:
@@ -214,46 +207,33 @@ class PauseMenu:
                                 except FileNotFoundError:
                                     currentlySaves = {}
 
-                                # Vérifier si le nombre maximum de sauvegardes est atteint
-                                if (
-                                    len(currentlySaves) >= self.maxSaves
-                                    and self.idOfLoadedGame not in currentlySaves
-                                ):
-                                    print(
-                                        "Vous avez atteint le maximum de sauvegardes. ("
-                                        + str(self.maxSaves)
-                                        + "/"
-                                        + str(self.maxSaves)
-                                        + ")"
-                                    )
-                                    self.display_error_message = True
-                                    self.error_message_start_time = (
-                                        pygame.time.get_ticks()
-                                    )
-                                else:
-                                    currentDateTime = datetime.now().strftime(
-                                        "%d-%m-%Y %H:%M"
-                                    )
+                                currentDateTime = datetime.now().strftime(
+                                    "%d-%m-%Y %H:%M"
+                                )
 
-                                    if str(self.idOfLoadedGame) in currentlySaves:
-                                        del currentlySaves[str(self.idOfLoadedGame)]
+                                if str(self.idOfLoadedGame) in currentlySaves:
+                                    del currentlySaves[str(self.idOfLoadedGame)]
 
-                                    currentlySaves[self.idOfLoadedGame] = {
-                                        "time": currentDateTime,
-                                        "level": self.joueurActif.get_level,
-                                        "player": {
-                                            "position": {
-                                                "x": self.joueurActif.get_position[0],
-                                                "y": self.joueurActif.get_position[1],
-                                            },
-                                            "inventory": self.joueurActif.get_inventaire,
-                                            "health": self.joueurActif.get_vie,
+                                currentlySaves[self.idOfLoadedGame] = {
+                                    "time": currentDateTime,
+                                    "level": self.joueurActif.get_level,
+                                    "player": {
+                                        "position": {
+                                            "x": self.joueurActif.get_position[0],
+                                            "y": self.joueurActif.get_position[1],
                                         },
-                                    }
+                                        "inventory": self.joueurActif.get_inventaire,
+                                        "health": self.joueurActif.get_vie,
+                                    },
+                                }
 
-                                    # Écraser la sauvegarde idOfLoadedGame
-                                    with open("saves.json", "w") as f:
-                                        json.dump(currentlySaves, f, indent=4)
+                                # Écraser la sauvegarde idOfLoadedGame
+                                with open("saves.json", "w") as f:
+                                    # afficher un message de succès
+                                    self.display_sucess_message = True
+                                    self.sucess_message_start_time = pygame.time.get_ticks()
+
+                                    json.dump(currentlySaves, f, indent=4)
                             elif key == "quit":
                                 pygame.quit()
                                 exit()
@@ -285,6 +265,7 @@ class PauseMenu:
                     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    self.audio.jouerSon("menuOpen.wav")
                     return True
         return False
 
@@ -294,6 +275,7 @@ class PauseMenu:
         QUAND: 14-05-2024
         QUOI: Boucle principale du menu de pause
         """
+        self.audio.jouerSon("menuOpen.wav")
 
         while self.menu_active:
             self.draw()

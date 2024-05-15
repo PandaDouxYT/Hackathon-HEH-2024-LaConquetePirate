@@ -32,10 +32,6 @@ class Interface:
         # Gestionnaire de temps pour contrôler le taux de rafraîchissement
         self.clock = pygame.time.Clock()
 
-        # Surface pour la carte
-        self.map_surface = pygame.Surface(window.get_size())
-        self.afficher_carte()
-
         print("Interface initialisée")
         
     def draw(self):
@@ -45,7 +41,6 @@ class Interface:
         QUOI: Dessine l'interface principale du jeu
         """
         self.window.fill((0, 0, 0))
-        self.window.blit(self.map_surface, (0, 0))
         self.afficher_joueur_actif()
         self.afficher_barre_vie(self.vieJoueur)
         self.afficher_nombre_piece(self.pieceJoueur)
@@ -133,7 +128,6 @@ class Interface:
                     self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
 
             self.draw()
-
 
     def afficher_joueur_actif(self):
         """
@@ -325,42 +319,3 @@ class Interface:
         
         # Afficher le nom de l'ennemi
         self.window.blit(text, (text_x, text_y))
-
-    def afficher_carte(self):
-        mesCarte = Carte(["map/carte1.json", "map/carte2.json"], 1)
-        mapActuelle = mesCarte.charger_carte()
-        print("Affichage de la carte...")
-
-        taille_case = 20  # Taille d'une case en pixels
-
-        # Charger le décor
-        decor_path = os.path.join(mapActuelle["decor"])
-        decor_image = pygame.image.load(decor_path)
-        decor_image = pygame.transform.scale(decor_image, (mapActuelle["taille"][0] * taille_case, mapActuelle["taille"][1] * taille_case))  
-
-        # Afficher la carte sur la surface de la carte
-        self.map_surface.blit(decor_image, (0, self.window.get_height() - decor_image.get_height()))
-
-        elementCollision = ["mur", "sol"]
-
-        # Dessiner les éléments de la carte
-        for element in mapActuelle["elements"]:
-            # Calculer la position en bas à gauche
-            position = (element["position"][0] * taille_case, self.window.get_height() - element["position"][1] * taille_case)
-            taille = (element["taille"][0] * taille_case, element["taille"][1] * taille_case)
-            position = (position[0], position[1] - taille[1])  # Ajuster pour que le point d'ancrage soit en bas à gauche
-
-            if element["type"] in elementCollision:
-                # Dessiner les éléments de collision
-                pygame.draw.rect(self.map_surface, (0, 0, 0) if element["type"] == "mur" else (255, 255, 255), pygame.Rect(position, taille))
-                
-            elif element["type"] == "trou":
-                rayon = taille_case // 2
-                pygame.draw.circle(self.map_surface, (0, 0, 0), (position[0] + rayon, position[1] + rayon), rayon)
-            elif element["type"] == "porte":
-                taille_porte = (taille_case // 2, taille_case * 2)
-                pygame.draw.rect(self.map_surface, (100, 50, 0), pygame.Rect(position, taille_porte))
-            elif element["type"] == "ennemi":
-                pygame.draw.rect(self.map_surface, (255, 0, 0), pygame.Rect(position, taille))
-            elif element["type"] == "joueur":
-                pygame.draw.rect(self.map_surface, (0, 255, 0), pygame.Rect(position, taille))
