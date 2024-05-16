@@ -39,6 +39,46 @@ class Joueur:
         # Display character at initial position
         self.afficherPersonnage(self._x, self._y)
 
+    @property
+    def get_position(self):
+        return self._personnage.get_position
+
+    @property
+    def get_level(self):
+        return self._niveau
+    
+    @property
+    def get_x_y(self):
+        return self._x, self._y
+
+    @property
+    def get_vie(self):
+        return self._vie
+
+    def modifier_vie(self, quantite):
+        self._vie += quantite
+        return self._vie
+
+    @property
+    def get_xp(self):
+        return self._xp
+    
+    @property
+    def get_piece(self):
+        return self._piece
+
+    @property
+    def get_inventaire(self):
+        return self._inventaire
+    
+    @property
+    def hauteur_saut(self):
+        return self._hauteur_saut
+
+    @hauteur_saut.setter
+    def hauteur_saut(self, valeur):
+        self._hauteur_saut = valeur
+
     def resize_image(self, image):
         new_width = 100
         original_width, original_height = image.get_size()
@@ -62,47 +102,12 @@ class Joueur:
             self._saut_en_cours = True
             self._vitesse_actuelle_saut = self._vitesse_saut * self._hauteur_saut
 
-    @property
-    def get_position(self):
-        return self._personnage.get_position
-
-    @property
-    def get_level(self):
-        return self._niveau
-
-    @property
-    def get_vie(self):
-        return self._vie
-
-    def modifier_vie(self, quantite):
-        self._vie += quantite
-        return self._vie
-
-    @property
-    def get_xp(self):
-        return self._xp
-    
-    @property
-    def get_piece(self):
-        return self._piece
-
-    @property
-    def get_inventaire(self):
-        return self._inventaire
 
     def RecupererObject(self, objet):
         if(objet not in self._inventaire):
             self._inventaire.append(objet)
         else:
             print("Vous possedez déjà cette objet")
-
-    @property
-    def hauteur_saut(self):
-        return self._hauteur_saut
-
-    @hauteur_saut.setter
-    def hauteur_saut(self, valeur):
-        self._hauteur_saut = valeur
 
     def modifier_saut(self, multiplicateur):
         self._hauteur_saut *= multiplicateur
@@ -113,27 +118,6 @@ class Joueur:
             self._niveau += 1
             self._xp = 0        
 
-    def Attaquer(self, ennemi):
-        distance = self.calculer_distance(ennemi._position)
-
-        if self._type == "longueDistance":
-            if distance >= 10:
-                if 'arc' in self.__inventaire:
-                    ennemi._vie -= 2 * self._degats
-                else:
-                    ennemi._vie -= self._degats
-        elif self._type == "midDistance":
-            if 5 <= distance < 10:
-                if 'hache' in self.__inventaire:
-                    ennemi._vie -= 2 * self._degats
-                else:
-                    ennemi._vie -= self._degats
-        elif self._type == "courteDistance":
-            if distance < 5:
-                if 'epee' in self.__inventaire:
-                    ennemi._vie -= 2 * self._degats
-                else:
-                    ennemi._vie -= self._degats
 
     def ChangerPersonnage(self, personnage_id):
         # Load new character sprites for animation

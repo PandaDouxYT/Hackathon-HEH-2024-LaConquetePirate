@@ -37,10 +37,13 @@ class Interface:
         else:
             print("Player not found in the map.")
 
-        personnage = Personnage("Capitaine Melon")
+        personnage = Personnage("Capitaine Melon", "longueDistance")
+        personnage2 = Personnage("Capitaine Melon", "midDistance")
+        personnage3 = Personnage("Capitaine Melon", "courteDistance")
+        self.personnage = personnage
         self.joueurActif = Joueur(personnage, player_position[0]*20, player_position[1]*20)
         self.idOfActivePlayer = "1"
-        self.ennemiActif = Ennemi("Goblin", 100, 20, [100, 200], [], 1)
+        self.ennemiActif = Ennemi("Goblin", "longueDistance", 95, 20, [], 0, 150, 50)
 
         self.vieJoueur = self.joueurActif.get_vie
         self.xpJoueur = self.joueurActif.get_xp
@@ -105,9 +108,10 @@ class Interface:
         self.afficher_nombre_piece(self.pieceJoueur)
         self.afficher_nombre_experience(self.xpJoueur)
         self.afficher_nombre_level(self.levelJoueur)
-        self.afficher_ennemi()
-
-        self.joueurActif.mettre_a_jour_position()  # Mise à jour de la position du joueur
+        self.attaquer = self.ennemiActif.comportement(self.joueurActif)
+        self.joueurActif.mettre_a_jour_position()
+        x, y = self.joueurActif.get_x_y
+        
 
         if self.idOfLoadedGame:
             fontCredits = pygame.font.SysFont(None, 20)
@@ -130,7 +134,6 @@ class Interface:
         pygame.display.update()
 
     def afficher_carte(self):
-        print("Affichage de la carte...")
 
         elementCollision = ["mur", "sol"]
 
@@ -403,10 +406,36 @@ class Interface:
         self.window.blit(text, (text_x, text_y))
         
     def afficher_ennemi(self):
-        # Charge l'image de l'ennemi
-        image_path = f'assets/img/en1.gif'
-        ennemi_image = pygame.image.load(image_path)
-        ennemi_image = pygame.transform.scale(ennemi_image, (90, 150))
+        # Définir les chemins des images
+        joueur_imgs = {
+            1: {
+                'selected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur1_selected.png")),
+                'unselected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur1_unselected.png"))
+            },
+            2: {
+                'selected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur2_selected.png")),
+                'unselected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur2_unselected.png"))
+            },
+            3: {
+                'selected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur3_selected.png")),
+                'unselected': pygame.image.load(os.path.join("assets", "img", "afficherJoueur3_unselected.png"))
+            }
+        }
+        joueur1_img = joueur_imgs[1]['selected'] if self.idOfActivePlayer == "1" else joueur_imgs[1]['unselected']
+        joueur2_img = joueur_imgs[2]['selected'] if self.idOfActivePlayer == "2" else joueur_imgs[2]['unselected']
+        joueur3_img = joueur_imgs[3]['selected'] if self.idOfActivePlayer == "3" else joueur_imgs[3]['unselected']
 
-        # Position de l'image de l'ennemi
-        self.window.blit(ennemi_image, (self.ennemiActif._position[0], self.ennemiActif._position[1]))
+        # Positionnement des images
+        joueur1_selected_x = 10
+        joueur1_selected_y = 10
+
+        joueur2_unselected_x = joueur1_selected_x + joueur1_img.get_width() + 10
+        joueur2_unselected_y = 10
+
+        joueur3_unselected_x = joueur2_unselected_x + joueur2_img.get_width() + 10
+        joueur3_unselected_y = 10
+
+        # Dessiner les images sur la fenêtre
+        self.window.blit(joueur1_img, (joueur1_selected_x, joueur1_selected_y))
+        self.window.blit(joueur2_img, (joueur2_unselected_x, joueur2_unselected_y))
+        self.window.blit(joueur3_img, (joueur3_unselected_x, joueur3_unselected_y))
