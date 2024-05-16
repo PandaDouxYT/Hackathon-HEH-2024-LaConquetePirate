@@ -1,21 +1,24 @@
 import pygame
 import os
 import json
+import time  # Import the time module
 from PauseMenu import PauseMenu
 from Joueur import Joueur
 from Personnage import Personnage
 from Carte import Carte
+from Audio import Audio
 
 class Interface:
     def __init__(self, window, idOfLoadedGame=None):
-        """
-        QUI: Anthony VERGEYLEN
-        QUAND: 13-05-2024
-        QUOI: Initialisation de l'interface
-        """
         self.window = window
         self.font = pygame.font.Font(None, 36)
         self.idOfLoadedGame = idOfLoadedGame
+        self.last_trap_time = 0  # Initialize the last trap interaction time to 0
+
+        self.audio = Audio()
+        self.volume_level = self.load_volume()  # Charger le volume initial
+        self.audio.set_global_volume(self.volume_level)
+        self.audio.musicAmbiance("musiqueJeu.mp3", True)
 
         with open("map/carte1.json", "r") as f:
             map_data = json.load(f)
@@ -38,8 +41,6 @@ class Interface:
         personnage = Personnage("Capitaine Melon")
         self.joueurActif = Joueur(personnage, player_position[0] * 20, player_position[1] * 20 + 100)
         
-        # Place the player directly on the ground based on initial map position
-
         self.idOfActivePlayer = "1"
         self.vieJoueur = self.joueurActif.get_vie
         self.xpJoueur = self.joueurActif.get_xp
@@ -53,6 +54,20 @@ class Interface:
         print("Carte chargée...")
         print(self.carte)
         print("Interface initialisée")
+
+    def save_volume(self):
+        """Enregistre la valeur du volume dans un fichier JSON"""
+        with open("settings.json", "w") as f:
+            json.dump({"volume": self.volume_level}, f)
+
+    def load_volume(self):
+        """Charge la valeur du volume depuis un fichier JSON"""
+        try:
+            with open("settings.json", "r") as f:
+                settings = json.load(f)
+                return settings.get("volume", 1.0)
+        except FileNotFoundError:
+            return 1.0  # Valeur par défaut si le fichier n'existe pas
     
     def charger_carte(self):
         print("Chargement de la carte...")
@@ -62,17 +77,14 @@ class Interface:
 
         taille_case = 20  # Taille d'une case en pixels
 
-        # Charger le décor
         decor_path = os.path.join(mapActuelle["decor"])
         decor_image = pygame.image.load(decor_path)
         decor_image = pygame.transform.scale(decor_image, (mapActuelle["taille"][0] * taille_case, mapActuelle["taille"][1] * taille_case))
 
-        # Créer une surface de fond
         self.background_surface = pygame.Surface((self.window.get_width(), self.window.get_height()))
         self.background_surface.fill((73, 140, 255))
         self.background_surface.blit(decor_image, (0, self.window.get_height() - decor_image.get_height()))
 
-        # Pré-calculer les positions et tailles des éléments
         elements = []
 
         for element in mapActuelle["elements"]:
@@ -89,14 +101,7 @@ class Interface:
 
         return {"elements": elements}
 
-
     def draw(self):
-        """
-        QUI: Anthony VERGEYLEN
-        QUAND: 13-05-2024
-        QUOI: Dessine l'interface principale du jeu
-        """
-
         if self.background_surface:
             self.window.blit(self.background_surface, (0, 0))
 
@@ -107,8 +112,9 @@ class Interface:
         self.afficher_nombre_piece(self.pieceJoueur)
         self.afficher_nombre_experience(self.xpJoueur)
         self.afficher_nombre_level(self.levelJoueur)
+        self.afficher_barre_vie_ennemi("Vertigo", 100)
 
-        self.joueurActif.mettre_a_jour_position()  # Mise à jour de la position du joueur
+        self.joueurActif.mettre_a_jour_position()
 
         if self.idOfLoadedGame:
             fontCredits = pygame.font.SysFont(None, 20)
@@ -131,15 +137,19 @@ class Interface:
         pygame.display.update()
 
     def afficher_carte(self):
-        # print("Affichage de la carte...")
-
         elementCollision = ["mur", "sol"]
 
-        # Dessiner les éléments de la carte
         for element_type, position, taille in self.carte["elements"]:
             if element_type in elementCollision:
-                # print(f"Drawing {element_type} at {position} with size {taille}")
-                pygame.draw.rect(self.window, (0, 0, 200), pygame.Rect(position, taille))
+                pass
+            elif element_type == "piege":
+                rayon = taille[0] // 2
+                # draw piques.png at position
+                piques_img = pygame.image.load(os.path.join("assets", "img", "piques.png"))
+                piques_img = pygame.transform.scale(piques_img, (taille[0], taille[1]))
+                self.window.blit(piques_img, position)
+            if element_type == "roche":
+                pygame.draw.rect(self.window, (88, 56, 32), pygame.Rect(position, taille))
             elif element_type == "trou":
                 rayon = taille[0] // 2
                 pygame.draw.circle(self.window, (0, 0, 0), (position[0] + rayon, position[1] + rayon), rayon)
@@ -148,24 +158,56 @@ class Interface:
                 pygame.draw.rect(self.window, (100, 50, 0), pygame.Rect(position, taille_porte))
             elif element_type == "ennemi":
                 pygame.draw.rect(self.window, (255, 0, 0), pygame.Rect(position, taille))
-            # elif element_type == "joueur":
-            #     pygame.draw.rect(self.window, (0, 255, 0), pygame.Rect(position, taille))
 
     def effacer_zone(self, x, y, width, height):
-        """
-        Efface la zone spécifiée en la remplissant avec la couleur de fond de la fenêtre.
-        """
         self.window.fill((73, 140, 255), (x, y, width, height))
     
     def run(self):
-        """
-        QUI: Anthony VERGEYLEN
-        QUAND: 14-05-2024
-        QUOI: Boucle principale de l'interface du jeu
-        """
         interface_active = True
         while interface_active:
-            self.clock.tick(60)  # Assure un taux de rafraîchissement de 60 FPS
+            self.clock.tick(60)
+            player_rect = self.joueurActif.get_rect()
+
+            for element_type, position, taille in self.carte["elements"]:
+                element_rect = pygame.Rect(position, taille)
+
+                if element_type in ["mur"] and player_rect.colliderect(element_rect):
+                    if self.keys['left']:
+                        self.joueurActif._x = element_rect.right
+                    elif self.keys['right']:
+                        self.joueurActif._x = element_rect.left - player_rect.width
+                if element_type in ["sol"] and player_rect.colliderect(element_rect):
+                    yOfSol = element_rect.top
+                    self.joueurActif._y = yOfSol
+                    self.joueurActif._saut_en_cours = False
+                    self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
+                if element_type in ["roche"] and player_rect.colliderect(element_rect):
+                    if player_rect.bottom <= element_rect.top + self.joueurActif._vitesse_actuelle_saut:
+                        self.joueurActif._y = element_rect.top
+                        self.joueurActif._saut_en_cours = False
+                        self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
+                    elif self.joueurActif._saut_en_cours and self.joueurActif._y < element_rect.bottom - 20:
+                        self.joueurActif._y = element_rect.top
+                        self.joueurActif._saut_en_cours = False
+                        self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
+                if element_type in ["piege"] and player_rect.colliderect(element_rect):
+                    current_time = time.time()
+                    if current_time - self.last_trap_time >= 1.2:  # Check if 1.2 seconds have passed
+                        print("tu t'es pris un piege")
+                        self.vieJoueur -= 10
+                        self.last_trap_time = current_time
+                        # Le joueur perd 10 points de vie donc il perd aussi un peu d'expérience :/
+                        self.xpJoueur -= 1
+                        self.audio.jouerSon("hurt.mp3")
+
+            # Check if the player's life is 0 or less
+            if self.vieJoueur <= 0:
+                print("Vous êtes mort")
+                self.afficher_message_de_mort()
+                break
+
+            self.joueurActif.appliquerGravite(self.carte["elements"])
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -174,11 +216,14 @@ class Interface:
                     if event.key == pygame.K_ESCAPE:
                         pause_menu = PauseMenu(self.window, self.idOfLoadedGame, self.joueurActif)
                         pause_menu.run()
-                    elif event.key == pygame.K_q:  # Déplacer à gauche
+                    elif event.key == pygame.K_q:
                         self.keys['left'] = True
-                    elif event.key == pygame.K_d:  # Déplacer à droite
+                    elif event.key == pygame.K_d:
                         self.keys['right'] = True
-                    elif event.key == pygame.K_SPACE:  # Déclencher le saut
+                    elif event.key == pygame.K_SPACE:
+                        # play jump.mp3
+                        self.audio.jouerSon("jump.mp3")
+
                         self.joueurActif.sauter()
                     elif event.key == pygame.K_1:
                         self.joueurActif.ChangerPersonnage(1)
@@ -194,57 +239,26 @@ class Interface:
                         self.keys['left'] = False
                     elif event.key == pygame.K_d:
                         self.keys['right'] = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 3:  # Right-click event
+                        self.joueurActif.tirer_fleche()
 
-            # Update player's position based on input
             if self.keys['left']:
                 self.joueurActif.deplacer_gauche()
             if self.keys['right']:
                 self.joueurActif.deplacer_droite()
 
-            # Gestion du saut
             if self.joueurActif._saut_en_cours:
                 self.joueurActif._y -= self.joueurActif._vitesse_actuelle_saut
                 self.joueurActif._vitesse_actuelle_saut += self.joueurActif._gravite
-                # print(self.joueurActif._y)
-                # if self.joueurActif._y <= 0:  # Supposons que la position y=0 est le sol
-                #     self.joueurActif._y = 0
-                #     self.joueurActif._saut_en_cours = False
-                #     self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
+            if self.joueurActif._y >= self.window.get_height():
+                self.joueurActif._y = self.window.get_height()
+                self.joueurActif._saut_en_cours = False
+                self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
 
-
-                
-                if self.joueurActif._vitesse_actuelle_saut >= 0:  # Start checking for landing when falling
-                    self.joueurActif._saut_en_cours = False
-
-            # Check for collisions with the map elements
-            player_rect = self.joueurActif.get_rect()
-            for element_type, position, taille in self.carte["elements"]:
-                element_rect = pygame.Rect(position, taille)
-                
-                if element_type in ["mur"] and player_rect.colliderect(element_rect):
-                    # Draw the wall in red when collision is detected
-                    pygame.draw.rect(self.window, (255, 0, 0), element_rect)
-
-                    print(f"Collision with {element_type}!")
-                    if self.keys['left']:
-                        self.joueurActif._x = element_rect.right
-                    elif self.keys['right']:
-                        self.joueurActif._x = element_rect.left - player_rect.width
-                # collision avec le sol
-                elif element_type in ["sol"] and player_rect.colliderect(element_rect):
-                    print(f"Collision with {element_type}!")
-                    if not self.joueurActif._saut_en_cours:  # Land only if not currently jumping
-                        self.joueurActif._y = element_rect.top - player_rect.height
-                        self.joueurActif._saut_en_cours = False
-                        self.joueurActif._vitesse_actuelle_saut = self.joueurActif._vitesse_saut * self.joueurActif._hauteur_saut
-
-            # Update the player's rectangle position after handling collisions
-            self.joueurActif.update_rect()
             self.joueurActif.appliquerGravite(self.carte["elements"])
-            
-            # Redraw the game window
-            self.draw()
 
+            self.draw()
 
     def afficher_joueur_actif(self):
         """
@@ -307,7 +321,6 @@ class Interface:
 
         # Dessiner la partie remplie de la barre de vie (verte)
         pygame.draw.rect(self.window, (0, 255, 0), (barre_vie_x, barre_vie_y, remplissage_width, barre_vie_height))
-
 
     def afficher_nombre_piece(self, nb_pieces=0):
         """
@@ -396,7 +409,6 @@ class Interface:
             objet_x = 10 + i * (objet_img.get_width() + 10)
             objet_y = 220
 
-
             # Dessiner l'image sur la fenêtre
             self.window.blit(objet_img, (objet_x, objet_y))
 
@@ -436,3 +448,44 @@ class Interface:
         
         # Afficher le nom de l'ennemi
         self.window.blit(text, (text_x, text_y))
+
+    def afficher_message_de_mort(self):
+        """
+        Affiche un message de mort lorsque le joueur meurt.
+        """
+
+        # Draw a semi-transparent overlay
+        overlay = pygame.Surface((self.window.get_width(), self.window.get_height()))
+        overlay.set_alpha(200)  # Set transparency level
+        overlay.fill((0, 0, 0))  # Dark gray overlay
+        self.window.blit(overlay, (0, 0))
+
+        # Use a large, modern font
+        font = pygame.font.Font(None, 74)
+        message = font.render("Vous êtes mort", True, (255, 255, 255))  # Render the message in white
+
+        # Add a shadow effect to the text
+        shadow = font.render("Vous êtes mort", True, (0, 0, 0))
+        shadow_rect = shadow.get_rect(center=(self.window.get_width() / 2 + 2, self.window.get_height() / 2 + 2))
+        self.window.blit(shadow, shadow_rect)  # Blit shadow slightly offset
+
+        text_rect = message.get_rect(center=(self.window.get_width() / 2, self.window.get_height() / 2))
+        self.window.blit(message, text_rect)  # Blit the message to the center of the window
+
+        # Render a "Press any key to exit" message
+        small_font = pygame.font.Font(None, 32)
+        sub_message = small_font.render("Appuyez sur une touche pour quitter", True, (255, 255, 255))
+        sub_message_rect = sub_message.get_rect(center=(self.window.get_width() / 2, self.window.get_height() / 2 + 100))
+        self.window.blit(sub_message, sub_message_rect)
+
+        pygame.display.update()  # Update the display
+
+        # Wait for user input to exit
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                    waiting = False
+                    pygame.quit()
+                    exit()
+
