@@ -1,9 +1,8 @@
 import pygame
-import time
 
 class Joueur:
-    def __init__(self, personnage, xJoueur, yJoueur, vie=100, inventaire=[], xp=10, niveau=0, piece=0):
-        self._vie = vie
+    def __init__(self, personnage, xJoueur, yJoueur, inventaire=[], xp=10, niveau=0, piece=0):
+        self._vie = 100
         self._inventaire = inventaire
         self._niveau = niveau
         self._xp = xp
@@ -150,27 +149,29 @@ class Joueur:
             self._niveau += 1
             self._xp = 0        
 
-    def Attaquer(self, ennemi):
-        distance = self.calculer_distance(ennemi._position)
+    def verifier_collisions_fleches(self, ennemi):
+        for fleche in self._arrows:
+            fleche_rect = pygame.Rect(fleche['position'][0], fleche['position'][1], 12, 12)
+            if fleche_rect.colliderect(ennemi.get_rect()):
+                self._arrows.remove(fleche)
+                self.Attaquer(ennemi)
 
-        if self._type == "longueDistance":
+
+    def Attaquer(self, ennemi):
+        print("Attaque")
+        distance = abs(ennemi.get_x_y[0] - self._x)
+        if self._personnage._type == "longueDistance":
+            print("1")
             if distance >= 10:
-                if 'arc' in self.__inventaire:
-                    ennemi._vie -= 2 * self._degats
-                else:
-                    ennemi._vie -= self._degats
-        elif self._type == "midDistance":
+                ennemi._vie -= self._personnage._degats
+        elif self._personnage._type == "midDistance":
+            print("2")
             if 5 <= distance < 10:
-                if 'hache' in self.__inventaire:
-                    ennemi._vie -= 2 * self._degats
-                else:
-                    ennemi._vie -= self._degats
-        elif self._type == "courteDistance":
+                ennemi._vie -= self._personnage._degats
+        elif self._personnage._type == "courteDistance":
+            print("3")
             if distance < 5:
-                if 'epee' in self.__inventaire:
-                    ennemi._vie -= 2 * self._degats
-                else:
-                    ennemi._vie -= self._degats
+                ennemi._vie -= self._personnage._degats
 
     def ChangerPersonnage(self, personnage_id):
         # Load new character sprites for animation

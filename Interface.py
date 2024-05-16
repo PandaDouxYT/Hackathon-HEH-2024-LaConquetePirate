@@ -11,12 +11,17 @@ from Audio import Audio
 
 class Interface:
     def __init__(self, window, idOfLoadedGame=None):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Initialisation de l'interface du jeu
+        """
         self.window = window
         self.font = pygame.font.Font(None, 36)
         self.idOfLoadedGame = idOfLoadedGame
         self.last_trap_time = 0  # Initialize the last trap interaction time to 0
 
-        self.niveauCarte = 1
+        self.niveauCarte = 2
 
         with open("map/carte"+str(self.niveauCarte)+".json", "r") as f:
             map_data = json.load(f)
@@ -25,6 +30,7 @@ class Interface:
         self.volume_level = self.load_volume()  # Charger le volume initial
         self.audio.set_global_volume(self.volume_level)
         self.audio.musicAmbiance(map_data['music'], True)
+        self.audio.jouerSon("startGame.mp3")
 
         # Initialize player's position
         player_position = None
@@ -41,18 +47,18 @@ class Interface:
                 break
 
         personnage = [
-            Personnage("Capitaine Melon", "longueDistance"),
-            Personnage("Capitaine Melon", "midDistance"),
-            Personnage("Capitaine Melon", "courteDistance")
+            Personnage("Capitaine Melon", "longueDistance", 10),
+            Personnage("Capitaine Melon", "midDistance", 15),
+            Personnage("Capitaine Melon", "courteDistance", 15)
         ]
         personnageEnCours = personnage[0]
-        self.joueurActif = Joueur(personnageEnCours, player_position[0] * 20, player_position[1] * 20 + 100)
+        self.joueurActif = Joueur(personnageEnCours, player_position[0] * 20, player_position[1] * 20 + 100, "")
         
         self.idOfActivePlayer = "1"
-        self.ennemiActif = Ennemi("Vertigo", "longueDistance", 95, 20, [], 0, ennemi_position[0]*20, ennemi_position[1]*20)
-
+        self.ennemiActif = Ennemi("Vertigo", "courteDistance", 95, 20, [], 2, ennemi_position[0]*20, ennemi_position[1]*20)
 
         self.vieJoueur = self.joueurActif.get_vie
+        print("Vie l: ", self.vieJoueur)
         self.xpJoueur = self.joueurActif.get_xp
         self.pieceJoueur = self.joueurActif.get_piece
         self.levelJoueur = self.joueurActif.get_level
@@ -66,12 +72,20 @@ class Interface:
         print("Interface initialisée")
 
     def save_volume(self):
-        """Enregistre la valeur du volume dans un fichier JSON"""
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Sauvegarde la valeur du volume dans un fichier JSON 
+        """
         with open("settings.json", "w") as f:
             json.dump({"volume": self.volume_level}, f)
 
     def load_volume(self):
-        """Charge la valeur du volume depuis un fichier JSON"""
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Charge la valeur du volume depuis un fichier JSON
+        """
         try:
             with open("settings.json", "r") as f:
                 settings = json.load(f)
@@ -80,6 +94,12 @@ class Interface:
             return 1.0  # Valeur par défaut si le fichier n'existe pas
     
     def charger_carte(self):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Charge la carte du jeu depuis un fichier JSON
+        """
+
         print("Chargement de la carte...")
         mesCarte = Carte(["map/carte1.json", "map/carte2.json"], self.niveauCarte)
         mapActuelle = mesCarte.charger_carte()
@@ -112,6 +132,11 @@ class Interface:
         return {"elements": elements}
 
     def draw(self):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Dessine l'interface du jeu
+        """
         if self.background_surface:
             self.window.blit(self.background_surface, (0, 0))
 
@@ -123,8 +148,19 @@ class Interface:
         self.afficher_nombre_experience(self.xpJoueur)
         self.afficher_nombre_level(self.levelJoueur)
         self.afficher_barre_vie_ennemi("Vertigo", 100)
-        self.attaquer = self.ennemiActif.comportement(self.joueurActif)
+
+        # Affichage du personnage joueur
         self.joueurActif.mettre_a_jour_position()
+
+        # Affichage de l'ennemi
+        self.ennemiActif.mettre_a_jour_position()
+
+        # print("Vie ennemi: ", self.ennemiActif._vie)
+
+        self.ennemiActif.verifier_mort()
+
+        self.vieJoueur = self.ennemiActif.attaque(self.joueurActif, self.vieJoueur)
+        self.ennemiActif.deplacer(self.joueurActif._x, self.joueurActif._y)
 
         if self.idOfLoadedGame:
             fontCredits = pygame.font.SysFont(None, 20)
@@ -147,14 +183,19 @@ class Interface:
         pygame.display.update()
 
     def afficher_carte(self):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Affiche la carte du jeu
+        """
         elementCollision = ["mur", "sol"]
 
         for element_type, position, taille in self.carte["elements"]:
             if element_type in elementCollision:
-                if element_type == "mur":
-                    pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
-                elif element_type == "sol":
-                    pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
+                # if element_type == "mur":
+                #     pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
+                # elif element_type == "sol":
+                #     pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
                 pass
             elif element_type == "piece":
                 # draw coin.png at position
@@ -177,12 +218,38 @@ class Interface:
                 pygame.draw.rect(self.window, (100, 50, 0), pygame.Rect(position, taille_porte))
 
     def effacer_zone(self, x, y, width, height):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Efface une zone de la fenêtre
+        # x: position x de la zone à effacer
+        # y: position y de la zone à effacer
+        # width: largeur de la zone à effacer
+        # height: hauteur de la zone à effacer
+        """
         self.window.fill((73, 140, 255), (x, y, width, height))
     
     def run(self):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Lance l'interface du jeu
+        """
         interface_active = True
         while interface_active:
             self.clock.tick(60)
+            
+            ennemi_rect = self.ennemiActif.get_rect()
+
+            for element_type, position, taille in self.carte["elements"]:
+                element_rect = pygame.Rect(position, taille)
+
+                if element_type in ["mur"] and ennemi_rect.colliderect(element_rect):
+                    if not self.ennemiActif._facing_right:
+                        self.ennemiActif._x = element_rect.right
+                    else:
+                        self.ennemiActif._x = element_rect.left - ennemi_rect.width - 10
+
             player_rect = self.joueurActif.get_rect()
 
             for element_type, position, taille in self.carte["elements"]:
@@ -192,7 +259,7 @@ class Interface:
                     if self.keys['left']:
                         self.joueurActif._x = element_rect.right
                     elif self.keys['right']:
-                        self.joueurActif._x = element_rect.left - player_rect.width
+                        self.joueurActif._x = element_rect.left - player_rect.width - 10
                 if element_type in ["sol"] and player_rect.colliderect(element_rect):
                     yOfSol = element_rect.top
                     self.joueurActif._y = yOfSol
@@ -210,26 +277,24 @@ class Interface:
                 if element_type in ["piege"] and player_rect.colliderect(element_rect):
                     current_time = time.time()
                     if current_time - self.last_trap_time >= 1.2:  # Check if 1.2 seconds have passed
-                        print("tu t'es pris un piege")
                         self.vieJoueur -= 10
 
                         self.last_trap_time = current_time
-                        # Le joueur perd 10 points de vie donc il perd aussi un peu d'expérience :/
                         self.xpJoueur -= 1
                         self.audio.jouerSon("hurt.mp3")
                 if element_type in ["piece"] and player_rect.colliderect(element_rect):
                     self.pieceJoueur += 1
                     self.audio.jouerSon("supermariocoin.mp3")
-                    # delete the coin from the map
                     self.carte["elements"].remove((element_type, position, taille))
 
-            # Check if the player's life is 0 or less
             if self.vieJoueur <= 0:
                 print("Vous êtes mort")
                 self.afficher_message_de_mort()
                 break
 
             self.joueurActif.appliquerGravite(self.carte["elements"])
+
+            self.joueurActif.verifier_collisions_fleches(self.ennemiActif)  # Ajoutez cet appel
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -244,9 +309,7 @@ class Interface:
                     elif event.key == pygame.K_d:
                         self.keys['right'] = True
                     elif event.key == pygame.K_SPACE:
-                        # play jump.mp3
                         self.audio.jouerSon("jump.mp3")
-
                         self.joueurActif.sauter()
                     elif event.key == pygame.K_1:
                         self.joueurActif.ChangerPersonnage(1)
@@ -282,6 +345,7 @@ class Interface:
             self.joueurActif.appliquerGravite(self.carte["elements"])
 
             self.draw()
+
 
     def afficher_joueur_actif(self):
         """
@@ -347,7 +411,10 @@ class Interface:
 
     def afficher_nombre_piece(self, nb_pieces=0):
         """
-        Affiche le nombre de pièces du joueur actif.
+        QUI: Anthony VERGEYLEN
+        QUAND: 13-05-2024
+        QUOI: Affiche le nombre de pièces du joueur actif
+        # nb_pieces: nombre de pièces du joueur actif
         """
         coin_img = pygame.image.load(os.path.join("assets", "img", "coin.png"))
         coin_width = coin_img.get_width()
@@ -372,7 +439,10 @@ class Interface:
 
     def afficher_nombre_level(self, level=0):
         """
-        Affiche le niveau du joueur actif.
+        QUI: Anthony VERGEYLEN
+        QUAND: 13-05-2024
+        QUOI: Affiche le niveau du joueur actif
+        # level: niveau du joueur actif
         """
         xp_img = pygame.image.load(os.path.join("assets", "img", "level.png"))
         xp_width = xp_img.get_width()
@@ -397,7 +467,10 @@ class Interface:
 
     def afficher_nombre_experience(self, xp=0):
         """
-        Affiche le nombre d'expérience du joueur actif.
+        QUI: Anthony VERGEYLEN
+        QUAND: 13-05-2024
+        QUOI: Affiche le nombre d'expérience du joueur actif
+        # xp: nombre d'expérience du joueur actif
         """
         text = self.font.render(str(xp), True, (255, 255, 255))
         text_width = text.get_width()
@@ -474,8 +547,18 @@ class Interface:
 
     def afficher_message_de_mort(self):
         """
-        Affiche un message de mort lorsque le joueur meurt.
+        QUI: Anthony VERGEYLEN
+        QUAND: 13-05-2024
+        QUOI: Affiche un message de mort et attend une entrée de l'utilisateur pour quitter le jeu
         """
+
+        # couper la musique 
+        self.audio.stopMusic()
+        # mettre le son a fond
+        self.audio.set_global_volume(1.0)
+        # wait 400 ms
+        time.sleep(1)
+        self.audio.jouerSon("death.mp3")
 
         # Draw a semi-transparent overlay
         overlay = pygame.Surface((self.window.get_width(), self.window.get_height()))
@@ -511,4 +594,3 @@ class Interface:
                     waiting = False
                     pygame.quit()
                     exit()
-
