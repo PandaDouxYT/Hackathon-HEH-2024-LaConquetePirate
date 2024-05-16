@@ -15,6 +15,14 @@ class Interface:
         QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
         QUAND: 16-05-2024
         QUOI: Initialisation de l'interface du jeu
+
+        Arguments:
+        - window: fenêtre Pygame
+        - idOfLoadedGame: ID de la sauvegarde chargée (None si aucune sauvegarde n'est chargée)
+
+        Retourne:
+        - Pas de retour
+
         """
         self.window = window
         self.font = pygame.font.Font(None, 36)
@@ -95,6 +103,12 @@ class Interface:
         QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
         QUAND: 16-05-2024
         QUOI: Sauvegarde la valeur du volume dans un fichier JSON 
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
         """
         with open("settings.json", "w") as f:
             json.dump({"volume": self.volume_level}, f)
@@ -104,6 +118,12 @@ class Interface:
         QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
         QUAND: 16-05-2024
         QUOI: Charge la valeur du volume depuis un fichier JSON
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - volume: float        
         """
         try:
             with open("settings.json", "r") as f:
@@ -117,6 +137,13 @@ class Interface:
         QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
         QUAND: 16-05-2024
         QUOI: Charge la carte du jeu depuis un fichier JSON
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - elements: list
+
         """
 
         print("Chargement de la carte...")
@@ -154,6 +181,13 @@ class Interface:
         QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
         QUAND: 16-05-2024
         QUOI: Dessine l'interface du jeu
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
         """
         if self.background_surface:
             self.window.blit(self.background_surface, (0, 0))
@@ -206,6 +240,13 @@ class Interface:
         QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
         QUAND: 16-05-2024
         QUOI: Affiche la carte du jeu
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
         """
         elementCollision = ["mur", "sol"]
 
@@ -240,10 +281,15 @@ class Interface:
         QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
         QUAND: 16-05-2024
         QUOI: Efface une zone de la fenêtre
-        # x: position x de la zone à effacer
-        # y: position y de la zone à effacer
-        # width: largeur de la zone à effacer
-        # height: hauteur de la zone à effacer
+
+        Arguments:
+        - x: position x de la zone à effacer
+        - y: position y de la zone à effacer
+        - width: largeur de la zone à effacer
+        - height: hauteur de la zone à effacer
+
+        Retourne:
+        - Pas de retour
         """
         self.window.fill((73, 140, 255), (x, y, width, height))
     
@@ -252,6 +298,13 @@ class Interface:
         QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
         QUAND: 16-05-2024
         QUOI: Lance l'interface du jeu
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
         """
         interface_active = True
         while interface_active:
@@ -372,6 +425,12 @@ class Interface:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Affiche le joueur actif en haut à gauche de la fenêtre
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
         """
         # Définir les chemins des images
         joueur_imgs = {
@@ -412,7 +471,13 @@ class Interface:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Affiche la barre de vie du joueur actif
-        # pourcentage: pourcentage de vie restante du joueur actif (eg. 50 pour 50% de vie restante)
+
+        Arguments:
+        - pourcentage: pourcentage de vie restante du joueur actif (eg. 50 pour 50% de vie restante)
+
+        Retourne:
+        - Pas de retour
+
         """
 
         self.joueurActif.set_vie(self.vieJoueur)
@@ -436,7 +501,13 @@ class Interface:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Affiche le nombre de pièces du joueur actif
-        # nb_pieces: nombre de pièces du joueur actif
+
+        Arguments:
+        - nb_pieces: nombre de pièces du joueur actif
+
+        Retourne:
+        - Pas de retour
+
         """
         coin_img = pygame.image.load(os.path.join("assets", "img", "coin.png"))
         coin_width = coin_img.get_width()
@@ -464,7 +535,12 @@ class Interface:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Affiche le niveau du joueur actif
-        # level: niveau du joueur actif
+
+        Arguments:
+        - level: niveau du joueur actif
+
+        Retourne:
+        - Pas de retour
         """
         xp_img = pygame.image.load(os.path.join("assets", "img", "level.png"))
         xp_width = xp_img.get_width()
@@ -492,7 +568,12 @@ class Interface:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Affiche le nombre d'expérience du joueur actif
-        # xp: nombre d'expérience du joueur actif
+
+        Arguments:
+        - xp: nombre d'expérience du joueur actif
+
+        Retourne:
+        - Pas de retour
         """
         text = self.font.render(str(xp), True, (255, 255, 255))
         text_width = text.get_width()
@@ -514,7 +595,13 @@ class Interface:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Actualise l'inventaire du joueur actif
-        # listeObjets: liste des objets à afficher dans l'inventaire (eg. ["chapeau", "cle", "coeur"])
+
+        Arguments:
+        - listeObjets: liste des objets à afficher dans l'inventaire (eg. ["chapeau", "cle", "coeur"])
+
+        Retourne:
+        - Pas de retour
+
         """
         for i, objet in enumerate(listeObjets):
             # Chargement de l'image de l'objet
@@ -535,8 +622,14 @@ class Interface:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Affiche la barre de vie de l'ennemi
-        # nom_ennemi: nom de l'ennemi à afficher (eg. "Goblin")
-        # pourcentage: pourcentage de vie restante de l'ennemi (eg. 50 pour 50% de vie restante)
+
+        Arguments:
+        - nom_ennemi: nom de l'ennemi à afficher (eg. "Goblin")
+        - pourcentage: pourcentage de vie restante de l'ennemi (eg. 50 pour 50% de vie restante)
+
+        Retourne:
+        - Pas de retour
+
         """
 
         barre_vie_height = 20
@@ -572,6 +665,13 @@ class Interface:
         QUI: Duchesne Guillaume
         QUAND: 16-05-2024
         QUOI: Affiche l'objet actif du joueur
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
         """
         if self.__monObjet is not None:
             try:
@@ -595,6 +695,13 @@ class Interface:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Affiche un message de mort et attend une entrée de l'utilisateur pour quitter le jeu
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+        
         """
 
         import pygame

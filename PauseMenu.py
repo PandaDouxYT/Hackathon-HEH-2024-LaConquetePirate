@@ -9,6 +9,16 @@ class PauseMenu:
         QUI: Nathan Isembaert & Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Initialisation du menu de pause
+
+        Arguments:
+        - window: pygame.Surface
+        - idOfLoadedGame: int
+        - joueurActif: Joueur
+        - initial_volume: float (entre 0.0 et 1.0)
+
+        Retourne:
+        - Pas de retour
+
         """
         self.idOfLoadedGame = idOfLoadedGame
         # print("== ID2:" , idOfLoadedGame)
@@ -104,12 +114,34 @@ class PauseMenu:
         self.sucess_message_start_time = 0
 
     def save_volume(self):
-        """Enregistre la valeur du volume dans un fichier JSON"""
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Sauvegarde le volume dans un fichier JSON
+        
+        Arguments:
+        - Pas d'arguments
+        
+        Retourne:
+        - Pas de retour
+        
+        """
         with open("settings.json", "w") as f:
             json.dump({"volume": self.volume_level}, f)
 
     def load_volume(self):
-        """Charge la valeur du volume depuis un fichier JSON"""
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Charge le volume depuis un fichier JSON
+        
+        Arguments:
+        - Pas d'arguments
+        
+        Retourne:
+        - volume: float
+        
+        """
         try:
             with open("settings.json", "r") as f:
                 settings = json.load(f)
@@ -122,6 +154,13 @@ class PauseMenu:
         QUI: Nathan Isembaert & Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Dessine le menu de pause à l'écran
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
         """
         # Dessiner un fond noir semi-transparent
         s = pygame.Surface(
@@ -183,6 +222,13 @@ class PauseMenu:
         QUI: Nathan Isembaert & Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Gère les événements du menu de pause
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - bool: True si le jeu doit reprendre, False sinon
+
         """
         cursor_changed = False
 
@@ -240,6 +286,13 @@ class PauseMenu:
         QUI: Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Sauvegarde le jeu dans un fichier JSON
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
         """
         from datetime import datetime
 
@@ -286,6 +339,13 @@ class PauseMenu:
         QUI: Nathan Isembaert & Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Boucle principale du menu de pause
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+        
         """
         self.audio.jouerSon("menuOpen.wav")
 

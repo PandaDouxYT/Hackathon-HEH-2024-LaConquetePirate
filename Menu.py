@@ -9,6 +9,13 @@ class MenuPrincipal:
         QUI: Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Initialisation de la classe MenuPrincipal
+
+        Arguments:
+        - window: pygame.Surface
+
+        Retourne:
+        - Pas de retour
+
         """
         self.window = window
         self.window_width, self.window_height = self.window.get_size()
@@ -211,12 +218,35 @@ class MenuPrincipal:
         self.adjusting_volume = False
 
     def save_volume(self):
-        """Enregistre la valeur du volume dans un fichier JSON"""
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Sauvegarde la valeur du volume dans un fichier JSON
+        
+        Arguments:
+        - Pas d'arguments
+        
+        Retourne:
+        - Pas de retour
+        
+        """
         with open("settings.json", "w") as f:
             json.dump({"volume": self.volume_level}, f)
 
     def load_volume(self):
-        """Charge la valeur du volume depuis un fichier JSON"""
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Charge la valeur du volume depuis un fichier JSON
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - volume: float
+
+        """
+
         try:
             with open("settings.json", "r") as f:
                 settings = json.load(f)
@@ -229,6 +259,12 @@ class MenuPrincipal:
         QUI: Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Dessine le menu principal
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
         """
         # Dessiner les boutons
         for key, button in self.buttons.items():
@@ -279,6 +315,13 @@ class MenuPrincipal:
         QUI: Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Gère les événements de la fenêtre
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - action: str ou None
+
         """
         cursor_changed = False
         for event in pygame.event.get():
@@ -350,6 +393,12 @@ class MenuPrincipal:
         QUI: Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Boucle principale du menu principal et détection des actions
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
         """
         menu_active = True
         while menu_active:

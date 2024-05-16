@@ -1,27 +1,53 @@
 import pygame, random
 
 class Objet:
-    """
-    Classe Objet
 
-    permet de créer un type d'objet spécifique
-    """
     def __init__(self, nom, type):
+        """
+        QUI: Duchesne Guillaume & Nathan Isembaert
+        QUAND: 16-05-2024
+        QUOI: Constructeur de la classe Objet
+
+        Arguments:
+        - nom: str
+        - type: str
+
+        Retourne:
+        - Pas de retour
+
+        """
         self.__nom = nom
         self.__type = type
     
     @property
     def type(self):
+        """
+        QUI: Duchesne Guillaume & Nathan Isembaert
+        QUAND: 16-05-2024
+        QUOI: Retourne le type de l'objet
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - type: str
+        
+        """
         return self.__type
 
 
     def UtiliserObjet(self, joueur):
         """
-        Permet d'utiliser un objet spécifique
+        QUI: Duchesne Guillaume & Nathan Isembaert
+        QUAND: 16-05-2024
+        QUOI: Permet d'utiliser un objet
 
-        paramètre : l'instance joueur
+        Arguments:
+        - joueur: Joueur
 
-        retourné : aucun
+        Retourne:
+        - Pas de retour
+
         """
         if self.__nom == "coeur":
             joueur.modifier_vie(50)
@@ -34,11 +60,16 @@ class Objet:
 
     def lacher_objet(self):
         """
-        Permet de choisir un objet a lâcher
+        QUI: Duchesne Guillaume & Nathan Isembaert
+        QUAND: 16-05-2024
+        QUOI: Permet de lâcher un objet
 
-        paramètre : aucun
+        Arguments:
+        - Pas d'arguments
 
-        retourné : l'objet qui a été choisi à lacher.
+        Retourne:
+        - objetLache: str
+        
         """
     
         objets_possibles = ['sword1', 'steak', 'piques']
