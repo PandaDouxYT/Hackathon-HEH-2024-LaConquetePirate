@@ -105,8 +105,8 @@ class Joueur:
     def get_vie(self):
         return self._vie
 
-    def modifier_vie(self, quantite):
-        self._vie += quantite
+    def set_vie(self, newLife):
+        self._vie = newLife
         return self._vie
 
     @property

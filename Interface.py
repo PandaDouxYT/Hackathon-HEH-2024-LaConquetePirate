@@ -23,6 +23,7 @@ class Interface:
 
         self.niveauCarte = 2
 
+
         with open("map/carte"+str(self.niveauCarte)+".json", "r") as f:
             map_data = json.load(f)
 
@@ -31,20 +32,25 @@ class Interface:
         self.audio.set_global_volume(self.volume_level)
         self.audio.musicAmbiance(map_data['music'], True)
         self.audio.jouerSon("startGame.mp3")
-
+        
         # Initialize player's position
         player_position = None
-
+        
         # Iterate through elements to find the player
-        for element in map_data['elements']:
-            if element['type'] == 'joueur':
-                player_position = element['position']
-                break
-
-        for element in map_data['elements']:
-            if element['type'] == 'ennemi':
-                ennemi_position = element['position']
-                break
+        if idOfLoadedGame:
+            with open("saves.json", "r") as f:
+                saves = json.load(f)
+                for save_id, save_data in saves.items():
+                    if save_id == str(idOfLoadedGame):
+                        player_position = (save_data["player"]["position"]['x'], save_data["player"]["position"]['y'])
+                        print("Position du joueur:", player_position)
+                        self.vieJoueur = save_data["player"]["health"]
+                        break
+        else:
+            for element in map_data['elements']:
+                if element['type'] == 'joueur':
+                    player_position = element['position']
+                    break
 
         personnage = [
             Personnage("Capitaine Melon", "longueDistance", 10),
@@ -54,11 +60,23 @@ class Interface:
         personnageEnCours = personnage[0]
         self.joueurActif = Joueur(personnageEnCours, player_position[0] * 20, player_position[1] * 20 + 100, "")
         
+
+
+        if not idOfLoadedGame:
+            self.vieJoueur = self.joueurActif.get_vie
+
+        for element in map_data['elements']:
+            if element['type'] == 'ennemi':
+                ennemi_position = element['position']
+                break
+
+        
         self.idOfActivePlayer = "1"
         self.ennemiActif = Ennemi("Vertigo", "courteDistance", 95, 20, [], 2, ennemi_position[0]*20, ennemi_position[1]*20)
 
-        self.vieJoueur = self.joueurActif.get_vie
-        print("Vie l: ", self.vieJoueur)
+        self.pause_menu = PauseMenu(self.window, self.idOfLoadedGame, self.joueurActif)
+
+
         self.xpJoueur = self.joueurActif.get_xp
         self.pieceJoueur = self.joueurActif.get_piece
         self.levelJoueur = self.joueurActif.get_level
@@ -288,7 +306,9 @@ class Interface:
                     self.carte["elements"].remove((element_type, position, taille))
 
             if self.vieJoueur <= 0:
+                self.joueurActif.set_vie(0)
                 print("Vous êtes mort")
+                self.pause_menu.save_game()
                 self.afficher_message_de_mort()
                 break
 
@@ -302,8 +322,7 @@ class Interface:
                     exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        pause_menu = PauseMenu(self.window, self.idOfLoadedGame, self.joueurActif)
-                        pause_menu.run()
+                        self.pause_menu.run()
                     elif event.key == pygame.K_q:
                         self.keys['left'] = True
                     elif event.key == pygame.K_d:
@@ -394,6 +413,8 @@ class Interface:
         QUOI: Affiche la barre de vie du joueur actif
         # pourcentage: pourcentage de vie restante du joueur actif (eg. 50 pour 50% de vie restante)
         """
+
+        self.joueurActif.set_vie(self.vieJoueur)
 
         barre_vie_x = 10
         barre_vie_y = 180
@@ -552,9 +573,12 @@ class Interface:
         QUOI: Affiche un message de mort et attend une entrée de l'utilisateur pour quitter le jeu
         """
 
+        import pygame
+        import time
+
         # couper la musique 
         self.audio.stopMusic()
-        # mettre le son a fond
+        # mettre le son à fond
         self.audio.set_global_volume(1.0)
         # wait 400 ms
         time.sleep(1)
@@ -562,27 +586,46 @@ class Interface:
 
         # Draw a semi-transparent overlay
         overlay = pygame.Surface((self.window.get_width(), self.window.get_height()))
-        overlay.set_alpha(200)  # Set transparency level
         overlay.fill((0, 0, 0))  # Dark gray overlay
         self.window.blit(overlay, (0, 0))
 
-        # Use a large, modern font
-        font = pygame.font.Font(None, 74)
-        message = font.render("Vous êtes mort", True, (255, 255, 255))  # Render the message in white
+        # Afficher au milieu de l'écran "Cette partie c'est fini pour vous !"
+        font = pygame.font.Font(None, 48)
+        message = font.render("Cette partie c'est fini pour vous !", True, (255, 255, 255))
+        message_rect = message.get_rect(center=(self.window.get_width() / 2, self.window.get_height() / 2))
+        self.window.blit(message, message_rect)
 
-        # Add a shadow effect to the text
-        shadow = font.render("Vous êtes mort", True, (0, 0, 0))
-        shadow_rect = shadow.get_rect(center=(self.window.get_width() / 2 + 2, self.window.get_height() / 2 + 2))
-        self.window.blit(shadow, shadow_rect)  # Blit shadow slightly offset
-
-        text_rect = message.get_rect(center=(self.window.get_width() / 2, self.window.get_height() / 2))
-        self.window.blit(message, text_rect)  # Blit the message to the center of the window
-
-        # Render a "Press any key to exit" message
+        # Afficher "Vous êtes mort !" en dessous
         small_font = pygame.font.Font(None, 32)
-        sub_message = small_font.render("Appuyez sur une touche pour quitter", True, (255, 255, 255))
-        sub_message_rect = sub_message.get_rect(center=(self.window.get_width() / 2, self.window.get_height() / 2 + 100))
+        sub_message = small_font.render("Vous êtes mort !", True, (255, 255, 255))
+        sub_message_rect = sub_message.get_rect(center=(self.window.get_width() / 2, self.window.get_height() / 2 + 50))
         self.window.blit(sub_message, sub_message_rect)
+
+        # Dessiner le bouton "Quitter" avec style Apple
+        button_width, button_height = 200, 50
+        button_color_start = (255, 255, 255)  # White
+        button_color_end = (200, 200, 200)  # Light gray
+        button_position = (
+            (self.window.get_width() - button_width) / 2,
+            self.window.get_height() / 2 + 150
+        )
+        button_rect = pygame.Rect(button_position[0], button_position[1], button_width, button_height)
+
+        # Draw the button with gradient
+        for i in range(button_height):
+            color = [
+                button_color_start[j] + (button_color_end[j] - button_color_start[j]) * (i / button_height)
+                for j in range(3)
+            ]
+            pygame.draw.line(self.window, color, (button_rect.left, button_rect.top + i), (button_rect.right, button_rect.top + i))
+
+        # Draw the actual button with rounded edges
+        pygame.draw.rect(self.window, button_color_start, button_rect, border_radius=10)
+
+        # Ajouter le texte "Quitter" sur le bouton
+        button_text = small_font.render("Quitter", True, (0, 0, 0))  # Black text
+        button_text_rect = button_text.get_rect(center=button_rect.center)
+        self.window.blit(button_text, button_text_rect)
 
         pygame.display.update()  # Update the display
 
@@ -590,7 +633,13 @@ class Interface:
         waiting = True
         while waiting:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT or event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.QUIT:
                     waiting = False
                     pygame.quit()
                     exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = event.pos  # Get the mouse position
+                    if button_rect.collidepoint(mouse_pos):
+                        waiting = False
+                        pygame.quit()
+                        exit()

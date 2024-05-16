@@ -197,43 +197,7 @@ class PauseMenu:
                             if key == "resume":
                                 return True
                             elif key == "save":
-                                from datetime import datetime
-
-                                print("Sauvegarde du jeu!...")
-                                # Charger les sauvegardes existantes ou initialiser un dictionnaire vide
-                                try:
-                                    with open("saves.json", "r") as f:
-                                        currentlySaves = json.load(f)
-                                except FileNotFoundError:
-                                    currentlySaves = {}
-
-                                currentDateTime = datetime.now().strftime(
-                                    "%d-%m-%Y %H:%M"
-                                )
-
-                                if str(self.idOfLoadedGame) in currentlySaves:
-                                    del currentlySaves[str(self.idOfLoadedGame)]
-
-                                currentlySaves[self.idOfLoadedGame] = {
-                                    "time": currentDateTime,
-                                    "level": self.joueurActif.get_level,
-                                    "player": {
-                                        "position": {
-                                            "x": self.joueurActif.get_position[0],
-                                            "y": self.joueurActif.get_position[1],
-                                        },
-                                        "inventory": self.joueurActif.get_inventaire,
-                                        "health": self.joueurActif.get_vie,
-                                    },
-                                }
-
-                                # Écraser la sauvegarde idOfLoadedGame
-                                with open("saves.json", "w") as f:
-                                    # afficher un message de succès
-                                    self.display_sucess_message = True
-                                    self.sucess_message_start_time = pygame.time.get_ticks()
-
-                                    json.dump(currentlySaves, f, indent=4)
+                                self.save_game()
                             elif key == "quit":
                                 pygame.quit()
                                 exit()
@@ -268,6 +232,50 @@ class PauseMenu:
                     self.audio.jouerSon("menuOpen.wav")
                     return True
         return False
+    
+    def save_game(self):
+        """
+        QUI: Anthony VERGEYLEN
+        QUAND: 14-05-2024
+        QUOI: Sauvegarde le jeu dans un fichier JSON
+        """
+        from datetime import datetime
+
+        print("Sauvegarde du jeu!...")
+        # Charger les sauvegardes existantes ou initialiser un dictionnaire vide
+        try:
+            with open("saves.json", "r") as f:
+                currentlySaves = json.load(f)
+        except FileNotFoundError:
+            currentlySaves = {}
+
+        currentDateTime = datetime.now().strftime(
+            "%d-%m-%Y %H:%M"
+        )
+
+        if str(self.idOfLoadedGame) in currentlySaves:
+            del currentlySaves[str(self.idOfLoadedGame)]
+
+        currentlySaves[self.idOfLoadedGame] = {
+            "time": currentDateTime,
+            "level": self.joueurActif.get_level,
+            "player": {
+                "position": {
+                    "x": self.joueurActif._x/20,
+                    "y": self.joueurActif._y/20,
+                },
+                "inventory": self.joueurActif.get_inventaire,
+                "health": self.joueurActif.get_vie,
+            },
+        }
+
+        # Écraser la sauvegarde idOfLoadedGame
+        with open("saves.json", "w") as f:
+            # afficher un message de succès
+            self.display_sucess_message = True
+            self.sucess_message_start_time = pygame.time.get_ticks()
+
+            json.dump(currentlySaves, f, indent=4)
 
     def run(self):
         """
