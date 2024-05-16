@@ -121,12 +121,11 @@ class Joueur:
     @property
     def get_inventaire(self):
         return self._inventaire
+    
+    @property
+    def get_x_y(self):
+        return self._x, self._y
 
-    def RecupererObject(self, objet):
-        if(objet not in self._inventaire):
-            self._inventaire.append(objet)
-        else:
-            print("Vous possedez déjà cette objet")
 
     @property
     def hauteur_saut(self):
@@ -135,6 +134,12 @@ class Joueur:
     @hauteur_saut.setter
     def hauteur_saut(self, valeur):
         self._hauteur_saut = valeur
+
+    def RecupererObject(self, objet):
+        if(objet not in self._inventaire):
+            self._inventaire.append(objet)
+        else:
+            print("Vous possedez déjà cette objet")
 
     def modifier_saut(self, multiplicateur):
         self._hauteur_saut *= multiplicateur

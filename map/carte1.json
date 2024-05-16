@@ -5,7 +5,7 @@
   ],
   "niveau": 1,
   "decor": "assets/img/map1.png",
-  "music": "",
+  "music": "musicCarte1.mp3",
   "elements": [
     {
       "type": "mur",
@@ -195,6 +195,17 @@
       ]
     },
     {
+      "type": "piece",
+      "position": [
+        87.5,
+        17.5
+      ],
+      "taille": [
+        2,
+        2
+      ]
+    },
+    {
       "type": "piege",
       "position": [
         58,
@@ -220,7 +231,7 @@
       "type": "ennemi",
       "position": [
         80,
-        37
+        38
       ],
       "taille": [
         3,

@@ -5,6 +5,7 @@ import time  # Import the time module
 from PauseMenu import PauseMenu
 from Joueur import Joueur
 from Personnage import Personnage
+from Ennemi import Ennemi
 from Carte import Carte
 from Audio import Audio
 
@@ -15,13 +16,15 @@ class Interface:
         self.idOfLoadedGame = idOfLoadedGame
         self.last_trap_time = 0  # Initialize the last trap interaction time to 0
 
+        self.niveauCarte = 1
+
+        with open("map/carte"+str(self.niveauCarte)+".json", "r") as f:
+            map_data = json.load(f)
+
         self.audio = Audio()
         self.volume_level = self.load_volume()  # Charger le volume initial
         self.audio.set_global_volume(self.volume_level)
-        self.audio.musicAmbiance("musiqueJeu.mp3", True)
-
-        with open("map/carte1.json", "r") as f:
-            map_data = json.load(f)
+        self.audio.musicAmbiance(map_data['music'], True)
 
         # Initialize player's position
         player_position = None
@@ -32,16 +35,23 @@ class Interface:
                 player_position = element['position']
                 break
 
-        # Output the player's position
-        if player_position:
-            print(f"Player's position: x = {player_position[0]}, y = {player_position[1]}")
-        else:
-            print("Player not found in the map.")
+        for element in map_data['elements']:
+            if element['type'] == 'ennemi':
+                ennemi_position = element['position']
+                break
 
-        personnage = Personnage("Capitaine Melon")
-        self.joueurActif = Joueur(personnage, player_position[0] * 20, player_position[1] * 20 + 100)
+        personnage = [
+            Personnage("Capitaine Melon", "longueDistance"),
+            Personnage("Capitaine Melon", "midDistance"),
+            Personnage("Capitaine Melon", "courteDistance")
+        ]
+        personnageEnCours = personnage[0]
+        self.joueurActif = Joueur(personnageEnCours, player_position[0] * 20, player_position[1] * 20 + 100)
         
         self.idOfActivePlayer = "1"
+        self.ennemiActif = Ennemi("Vertigo", "longueDistance", 95, 20, [], 0, ennemi_position[0]*20, ennemi_position[1]*20)
+
+
         self.vieJoueur = self.joueurActif.get_vie
         self.xpJoueur = self.joueurActif.get_xp
         self.pieceJoueur = self.joueurActif.get_piece
@@ -71,7 +81,7 @@ class Interface:
     
     def charger_carte(self):
         print("Chargement de la carte...")
-        mesCarte = Carte(["map/carte1.json", "map/carte2.json"], 1)
+        mesCarte = Carte(["map/carte1.json", "map/carte2.json"], self.niveauCarte)
         mapActuelle = mesCarte.charger_carte()
         print("Carte chargée...")
 
@@ -113,7 +123,7 @@ class Interface:
         self.afficher_nombre_experience(self.xpJoueur)
         self.afficher_nombre_level(self.levelJoueur)
         self.afficher_barre_vie_ennemi("Vertigo", 100)
-
+        self.attaquer = self.ennemiActif.comportement(self.joueurActif)
         self.joueurActif.mettre_a_jour_position()
 
         if self.idOfLoadedGame:
@@ -141,7 +151,16 @@ class Interface:
 
         for element_type, position, taille in self.carte["elements"]:
             if element_type in elementCollision:
+                if element_type == "mur":
+                    pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
+                elif element_type == "sol":
+                    pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
                 pass
+            elif element_type == "piece":
+                # draw coin.png at position
+                coin_img = pygame.image.load(os.path.join("assets", "img", "coin.png"))
+                coin_img = pygame.transform.scale(coin_img, (taille[0], taille[1]))
+                self.window.blit(coin_img, position)
             elif element_type == "piege":
                 rayon = taille[0] // 2
                 # draw piques.png at position
@@ -156,8 +175,6 @@ class Interface:
             elif element_type == "porte":
                 taille_porte = (taille[0] // 2, taille[1] * 2)
                 pygame.draw.rect(self.window, (100, 50, 0), pygame.Rect(position, taille_porte))
-            elif element_type == "ennemi":
-                pygame.draw.rect(self.window, (255, 0, 0), pygame.Rect(position, taille))
 
     def effacer_zone(self, x, y, width, height):
         self.window.fill((73, 140, 255), (x, y, width, height))
@@ -195,10 +212,16 @@ class Interface:
                     if current_time - self.last_trap_time >= 1.2:  # Check if 1.2 seconds have passed
                         print("tu t'es pris un piege")
                         self.vieJoueur -= 10
+
                         self.last_trap_time = current_time
                         # Le joueur perd 10 points de vie donc il perd aussi un peu d'expérience :/
                         self.xpJoueur -= 1
                         self.audio.jouerSon("hurt.mp3")
+                if element_type in ["piece"] and player_rect.colliderect(element_rect):
+                    self.pieceJoueur += 1
+                    self.audio.jouerSon("supermariocoin.mp3")
+                    # delete the coin from the map
+                    self.carte["elements"].remove((element_type, position, taille))
 
             # Check if the player's life is 0 or less
             if self.vieJoueur <= 0:
