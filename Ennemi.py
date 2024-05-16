@@ -2,6 +2,10 @@ import pygame
 from Personnage import Personnage
 from Objet import Objet
 
+import pygame
+from Personnage import Personnage
+from Objet import Objet
+
 class Ennemi(Personnage):
     
     def __init__(self, nom, type, vie, degats, inventaire, schemaAttaque, x=0, y=0):
@@ -12,10 +16,15 @@ class Ennemi(Personnage):
         self._degats = degats
         super().__init__(nom, type)
 
+        self.width = 100
+        self.height = 90
+
+        self.window = pygame.display.get_surface()
+
         # Load character sprites for animation
-        self._idle_image = pygame.image.load("assets/img/character1idle.png")
+        self._idle_image = pygame.image.load("assets/img/character4idle.png")
         self._move_images = [
-            pygame.image.load(f"assets/img/character1move{i}.png") for i in range(1, 5)
+            pygame.image.load(f"assets/img/character4move{i}.png") for i in range(1, 5)
         ]
         
         # Resize character sprites
@@ -28,6 +37,9 @@ class Ennemi(Personnage):
         self._animation_delay = 90  # Delay in milliseconds
 
         self._facing_right = True  # Indicates the direction the character is facing
+
+        # Update the position to reflect the initial coordinates
+        self.mettre_a_jour_position()
 
     def resize_image(self, image):
         new_width = 100
@@ -44,11 +56,12 @@ class Ennemi(Personnage):
         if self.__schemaAttaque == 0:
             # L'ennemi attaque si le joueur se rapproche trop près (par exemple distance < 10)
             if self._vie < 100:
-                self.deplacer(positionX)
+                self.deplacer(positionX, positionY)
                 if distanceX < 10:
                     attaquer = True
                 else:
                     attaquer = False
+                
             
         elif self.__schemaAttaque == 1:
             # L'ennemi attaque en s'éloignant du joueur (pour un ennemi de type long)
@@ -60,7 +73,7 @@ class Ennemi(Personnage):
                 attaquer = True
 
         elif self.__schemaAttaque == 2:
-            self.deplacer(positionX)
+            self.deplacer(positionX, positionY)
             attaquer = True
 
         else:
@@ -69,13 +82,20 @@ class Ennemi(Personnage):
         return attaquer
 
     # Se rapprocher
-    def deplacer(self, x):
+    def deplacer(self, x, y):
         if abs(x - self._x) < 145:
             self.deplacer_arreter()
         elif x > self._x:
             self.deplacer_droite()
         elif x < self._x:
             self.deplacer_gauche()
+        print("Hauteur du joueur: ", y, "Hauteur de l'ennemi: ", self._y)
+        if 759 < self._y:
+            if y-150 > self._y:
+                self._y += 2
+            elif y-150 < self._y:
+                self._y -= 2
+        
 
     # S'éloigner
     def deplacer_inverse(self, x):
@@ -118,16 +138,18 @@ class Ennemi(Personnage):
                 joueur._vie -= self._degats
 
     def afficherPersonnage(self, x, y):
-        window = pygame.display.get_surface()
         
-        # Adjust y to account for the character's height
-        adjusted_y = y - self._character_height
-        window.blit(self._current_image, (x, adjusted_y))
+        # Display the character without adjusting the y position
+        self.window.blit(self._current_image, (x, y))
+
+        self.rect = pygame.Rect(x, y, self.width, self._character_height).inflate(-20, 5)
+        self.rectDisplay = pygame.draw.rect(self.window, (255, 0, 0), (self.rect), 1)
+
+
 
     def mettre_a_jour_position(self):
-        window = pygame.display.get_surface()
-        window_height = window.get_height()
-        self.afficherPersonnage(self._x, window_height - self._y)
+        self.afficherPersonnage(self._x, self._y)
+
 
     def verifier_mort(self):
         if self._vie <= 0:

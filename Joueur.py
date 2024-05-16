@@ -1,4 +1,5 @@
 import pygame
+import time
 
 class Joueur:
     def __init__(self, personnage, xJoueur, yJoueur, vie=100, inventaire=[], xp=10, niveau=0, piece=0):
@@ -11,8 +12,8 @@ class Joueur:
         self._personnage = personnage
 
         self._saut_en_cours = False
-        self._vitesse_saut = -15  # vitesse initiale du saut (négative pour aller vers le haut)
-        self._gravite = 1  # gravité affectant le saut
+        self._vitesse_saut = 15  # vitesse initiale du saut (négative pour aller vers le haut)
+        self._gravite = -1  # gravité affectant le saut
         self._vitesse_actuelle_saut = self._vitesse_saut
         
         # Load character sprites for animation
@@ -32,12 +33,66 @@ class Joueur:
 
         self._facing_right = True  # Indicates the direction the character is facing
 
-        # Set initial position
+        self.width = 100
+        self.height = 90
+
         self._x = xJoueur
         self._y = yJoueur
 
+        self.window = pygame.display.get_surface()
+
+        # Arrow properties
+        self._arrow_speed = 15
+        self._arrows = []
+        self._last_shot_time = 0  # Time of the last shot
+        self._shot_cooldown = 500  # Cooldown time in milliseconds
+
         # Display character at initial position
         self.afficherPersonnage(self._x, self._y)
+
+    def resize_image(self, image):
+        new_width = 100
+        original_width, original_height = image.get_size()
+        new_height = int((new_width / original_width) * original_height)
+        return pygame.transform.scale(image, (new_width, new_height))
+    
+    def get_rect(self):
+        return self.rect
+    
+    def afficherPersonnage(self, x, y):
+        adjusted_y = y - self._character_height
+        self.window.blit(self._current_image, (x, adjusted_y))
+
+        self.rect = pygame.Rect(x, adjusted_y, self.width, self._character_height).inflate(-20, 5)
+        self.rectDisplay = pygame.draw.rect(self.window, (255, 0, 0), (self.rect), 1)
+
+    def mettre_a_jour_position(self):
+        self.afficherPersonnage(self._x, self._y)
+        self.mettre_a_jour_fleches()
+
+    def sauter(self):
+        if not self._saut_en_cours:  # Vérifiez si le joueur n'est pas déjà en train de sauter
+            self._saut_en_cours = True
+            self._vitesse_actuelle_saut = self._vitesse_saut * self._hauteur_saut
+
+    def tirer_fleche(self):
+        current_time = pygame.time.get_ticks()
+        if current_time - self._last_shot_time >= self._shot_cooldown:
+            direction = 1 if self._facing_right else -1
+            fleche_position = (self._x + (self.width if self._facing_right else -12), self._y - self._character_height // 2 + 10)  # Adjusted position
+            self._arrows.append({'position': fleche_position, 'direction': direction})
+            self._last_shot_time = current_time  # Update the time of the last shot
+
+    def mettre_a_jour_fleches(self):
+        for fleche in self._arrows:
+            fleche['position'] = (fleche['position'][0] + fleche['direction'] * self._arrow_speed, fleche['position'][1])
+            self.afficher_fleche(fleche['position'])
+        self._arrows = [fleche for fleche in self._arrows if 0 < fleche['position'][0] < self.window.get_width()]
+
+    def afficher_fleche(self, position):
+        fleche_image = pygame.image.load("assets/img/arrow.png")
+        fleche_image = pygame.transform.scale(fleche_image, (12, 12))
+        self.window.blit(fleche_image, position)
 
     @property
     def get_position(self):
@@ -46,10 +101,6 @@ class Joueur:
     @property
     def get_level(self):
         return self._niveau
-    
-    @property
-    def get_x_y(self):
-        return self._x, self._y
 
     @property
     def get_vie(self):
@@ -72,36 +123,17 @@ class Joueur:
         return self._inventaire
     
     @property
+    def get_x_y(self):
+        return self._x, self._y
+
+
+    @property
     def hauteur_saut(self):
         return self._hauteur_saut
 
     @hauteur_saut.setter
     def hauteur_saut(self, valeur):
         self._hauteur_saut = valeur
-
-    def resize_image(self, image):
-        new_width = 100
-        original_width, original_height = image.get_size()
-        new_height = int((new_width / original_width) * original_height)
-        return pygame.transform.scale(image, (new_width, new_height))
-
-    def afficherPersonnage(self, x, y):
-        window = pygame.display.get_surface()
-        
-        # Adjust y to account for the character's height
-        adjusted_y = y - self._character_height
-        window.blit(self._current_image, (x, adjusted_y))
-
-    def mettre_a_jour_position(self):
-        window = pygame.display.get_surface()
-        window_height = window.get_height()
-        self.afficherPersonnage(self._x, window_height - self._y)
-
-    def sauter(self):
-        if not self._saut_en_cours:  # Vérifiez si le joueur n'est pas déjà en train de sauter
-            self._saut_en_cours = True
-            self._vitesse_actuelle_saut = self._vitesse_saut * self._hauteur_saut
-
 
     def RecupererObject(self, objet):
         if(objet not in self._inventaire):
@@ -118,6 +150,27 @@ class Joueur:
             self._niveau += 1
             self._xp = 0        
 
+    def Attaquer(self, ennemi):
+        distance = self.calculer_distance(ennemi._position)
+
+        if self._type == "longueDistance":
+            if distance >= 10:
+                if 'arc' in self.__inventaire:
+                    ennemi._vie -= 2 * self._degats
+                else:
+                    ennemi._vie -= self._degats
+        elif self._type == "midDistance":
+            if 5 <= distance < 10:
+                if 'hache' in self.__inventaire:
+                    ennemi._vie -= 2 * self._degats
+                else:
+                    ennemi._vie -= self._degats
+        elif self._type == "courteDistance":
+            if distance < 5:
+                if 'epee' in self.__inventaire:
+                    ennemi._vie -= 2 * self._degats
+                else:
+                    ennemi._vie -= self._degats
 
     def ChangerPersonnage(self, personnage_id):
         # Load new character sprites for animation
@@ -142,14 +195,16 @@ class Joueur:
 
     def deplacer_gauche(self):
         self._x -= 5  # Déplace le joueur de 5 pixels à gauche
-        self.mettre_a_jour_position()
+        self.afficherPersonnage(self._x, self.window.get_height() - self._y)
+        
         if self._facing_right:
             self.inverser_direction()
         self.animer_marche()
 
     def deplacer_droite(self):
         self._x += 5  # Déplace le joueur de 5 pixels à droite
-        self.mettre_a_jour_position()
+        self.afficherPersonnage(self._x, self.window.get_height() - self._y)
+        
         if not self._facing_right:
             self.inverser_direction()
         self.animer_marche()
@@ -165,3 +220,20 @@ class Joueur:
             self._animation_index = (self._animation_index + 1) % len(self._move_images)
             self._current_image = self._move_images[self._animation_index]
             self._animation_time = current_time
+
+    def appliquerGravite(self, elements):
+        # Appliquer la gravité si le joueur n'est pas en train de sauter
+        if not self._saut_en_cours:
+            on_ground = False
+            for element_type, position, taille in elements:
+                if element_type == "sol":
+                    element_rect = pygame.Rect(position, taille)
+                    player_rect = self.get_rect()
+                    # Vérifier si le joueur est juste au-dessus du sol
+                    if player_rect.colliderect(element_rect) and player_rect.bottom <= element_rect.top + 1:
+                        on_ground = True
+                        break
+            
+            if not on_ground:
+                self._y += 5  # Appliquer une force de gravité
+                self._y = min(self._y, self.window.get_height())  # Ne pas dépasser le bas de l'écran

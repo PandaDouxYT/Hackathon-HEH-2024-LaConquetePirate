@@ -5,12 +5,12 @@
   ],
   "niveau": 1,
   "decor": "assets/img/map1.png",
-  "music": "",
+  "music": "musicCarte1.mp3",
   "elements": [
     {
       "type": "mur",
       "position": [
-        96,
+        95.5,
         0
       ],
       "taille": [
@@ -21,7 +21,7 @@
     {
       "type": "mur",
       "position": [
-        0,
+        -0.5,
         0
       ],
       "taille": [
@@ -33,7 +33,7 @@
       "type": "sol",
       "position": [
         0,
-        0
+        48
       ],
       "taille": [
         96,
@@ -44,7 +44,7 @@
       "type": "sol",
       "position": [
         7,
-        0
+        45
       ],
       "taille": [
         23,
@@ -55,7 +55,7 @@
       "type": "sol",
       "position": [
         65,
-        0
+        45
       ],
       "taille": [
         22,
@@ -66,7 +66,7 @@
       "type": "sol",
       "position": [
         62,
-        0
+        47
       ],
       "taille": [
         3,
@@ -77,7 +77,7 @@
       "type": "sol",
       "position": [
         29,
-        0
+        47
       ],
       "taille": [
         3,
@@ -88,7 +88,7 @@
       "type": "sol",
       "position": [
         5,
-        0
+        47
       ],
       "taille": [
         3,
@@ -96,10 +96,131 @@
       ]
     },
     {
+      "type": "roche",
+      "position": [
+        31,
+        40
+      ],
+      "taille": [
+        13,
+        3
+      ]
+    },
+    {
+      "type": "roche",
+      "position": [
+        47,
+        35
+      ],
+      "taille": [
+        13,
+        3
+      ]
+    },
+    {
+      "type": "roche",
+      "position": [
+        35,
+        30
+      ],
+      "taille": [
+        4,
+        3
+      ]
+    },
+    {
+      "type": "roche",
+      "position": [
+        13,
+        25
+      ],
+      "taille": [
+        13,
+        3
+      ]
+    },
+    {
+      "type": "roche",
+      "position": [
+        34,
+        20
+      ],
+      "taille": [
+        9,
+        2
+      ]
+    },
+    {
+      "type": "roche",
+      "position": [
+        52,
+        18
+      ],
+      "taille": [
+        4,
+        2
+      ]
+    },
+    {
+      "type": "roche",
+      "position": [
+        60,
+        24
+      ],
+      "taille": [
+        3,
+        2
+      ]
+    },
+    {
+      "type": "roche",
+      "position": [
+        72,
+        21
+      ],
+      "taille": [
+        3,
+        2
+      ]
+    },
+    {
+      "type": "roche",
+      "position": [
+        82,
+        20
+      ],
+      "taille": [
+        15,
+        2
+      ]
+    },
+    {
+      "type": "piece",
+      "position": [
+        87.5,
+        17.5
+      ],
+      "taille": [
+        2,
+        2
+      ]
+    },
+    {
+      "type": "piege",
+      "position": [
+        58,
+        48
+      ],
+      "taille": [
+        5,
+        1.4
+      ]
+    },
+    {
       "type": "joueur",
       "position": [
-        10,
-        8.5
+        6.5,
+        38
       ],
       "taille": [
         3,
@@ -110,7 +231,7 @@
       "type": "ennemi",
       "position": [
         80,
-        8.5
+        38
       ],
       "taille": [
         3,

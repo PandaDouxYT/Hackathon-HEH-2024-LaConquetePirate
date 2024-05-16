@@ -1,5 +1,4 @@
-import pygame
-import Joueur
+import pygame, random
 
 class Objet:
     def __init__(self, nom, type):
