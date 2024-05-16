@@ -25,6 +25,7 @@ class Interface:
         self.volume_level = self.load_volume()  # Charger le volume initial
         self.audio.set_global_volume(self.volume_level)
         self.audio.musicAmbiance(map_data['music'], True)
+        self.audio.jouerSon("startGame.mp3")
 
         # Initialize player's position
         player_position = None
@@ -41,17 +42,18 @@ class Interface:
                 break
 
         personnage = [
-            Personnage("Capitaine Melon", "longueDistance"),
-            Personnage("Capitaine Melon", "midDistance"),
-            Personnage("Capitaine Melon", "courteDistance")
+            Personnage("Capitaine Melon", "longueDistance", 10),
+            Personnage("Capitaine Melon", "midDistance", 15),
+            Personnage("Capitaine Melon", "courteDistance", 15)
         ]
         personnageEnCours = personnage[0]
-        self.joueurActif = Joueur(personnageEnCours, player_position[0] * 20, player_position[1] * 20 + 100)
+        self.joueurActif = Joueur(personnageEnCours, player_position[0] * 20, player_position[1] * 20 + 100, "")
         
         self.idOfActivePlayer = "1"
         self.ennemiActif = Ennemi("Vertigo", "courteDistance", 95, 20, [], 2, ennemi_position[0]*20, ennemi_position[1]*20)
 
         self.vieJoueur = self.joueurActif.get_vie
+        print("Vie l: ", self.vieJoueur)
         self.xpJoueur = self.joueurActif.get_xp
         self.pieceJoueur = self.joueurActif.get_piece
         self.levelJoueur = self.joueurActif.get_level
@@ -129,7 +131,10 @@ class Interface:
         # Affichage de l'ennemi
         self.ennemiActif.mettre_a_jour_position()
 
-        # Mise à jour de la vie du joueur après l'attaque
+        # print("Vie ennemi: ", self.ennemiActif._vie)
+
+        self.ennemiActif.verifier_mort()
+
         self.vieJoueur = self.ennemiActif.attaque(self.joueurActif, self.vieJoueur)
         self.ennemiActif.deplacer(self.joueurActif._x, self.joueurActif._y)
 
@@ -197,7 +202,6 @@ class Interface:
                 element_rect = pygame.Rect(position, taille)
 
                 if element_type in ["mur"] and ennemi_rect.colliderect(element_rect):
-                    # print("collision avec un mur" + str(self.ennemiActif._facing_right))
                     if not self.ennemiActif._facing_right:
                         self.ennemiActif._x = element_rect.right
                     else:
@@ -233,22 +237,21 @@ class Interface:
                         self.vieJoueur -= 10
 
                         self.last_trap_time = current_time
-                        # Le joueur perd 10 points de vie donc il perd aussi un peu d'expérience :/
                         self.xpJoueur -= 1
                         self.audio.jouerSon("hurt.mp3")
                 if element_type in ["piece"] and player_rect.colliderect(element_rect):
                     self.pieceJoueur += 1
                     self.audio.jouerSon("supermariocoin.mp3")
-                    # delete the coin from the map
                     self.carte["elements"].remove((element_type, position, taille))
 
-            # Check if the player's life is 0 or less
             if self.vieJoueur <= 0:
                 print("Vous êtes mort")
                 self.afficher_message_de_mort()
                 break
 
             self.joueurActif.appliquerGravite(self.carte["elements"])
+
+            self.joueurActif.verifier_collisions_fleches(self.ennemiActif)  # Ajoutez cet appel
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -263,9 +266,7 @@ class Interface:
                     elif event.key == pygame.K_d:
                         self.keys['right'] = True
                     elif event.key == pygame.K_SPACE:
-                        # play jump.mp3
                         self.audio.jouerSon("jump.mp3")
-
                         self.joueurActif.sauter()
                     elif event.key == pygame.K_1:
                         self.joueurActif.ChangerPersonnage(1)
@@ -301,6 +302,7 @@ class Interface:
             self.joueurActif.appliquerGravite(self.carte["elements"])
 
             self.draw()
+
 
     def afficher_joueur_actif(self):
         """

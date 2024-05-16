@@ -6,12 +6,11 @@ from Audio import Audio
 class Ennemi(Personnage):
     
     def __init__(self, nom, type, vie, degats, inventaire, schemaAttaque, x=0, y=0):
-        super().__init__(nom, type)
+        super().__init__(nom, type, degats)
         self.__schemaAttaque = schemaAttaque
         self._x = x
         self._y = y
         self._vie = vie
-        self._degats = degats
 
         self.width = 100
         self.height = 90
@@ -91,6 +90,10 @@ class Ennemi(Personnage):
         self.animer_marche()
     def get_rect(self):
         return self.rect
+    
+
+
+
     def comportement(self, joueur):
         peutAttaquerJoueur = False
         positionX, positionY = joueur.get_x_y
@@ -122,6 +125,10 @@ class Ennemi(Personnage):
             print("Votre schéma d'attaque n'existe pas")
 
         return peutAttaquerJoueur
+    
+    @property
+    def get_x_y(self):
+        return self._x, self._y
 
     def attaque(self, joueur, vieJoueur):
         currentVieJoueur = vieJoueur
@@ -166,7 +173,11 @@ class Ennemi(Personnage):
 
     def verifier_mort(self):
         if self._vie <= 0:
-            objet_lache = Objet.lacher_objet()
+            objet_lache = Objet.lacher_objet(self)
+            self._vie = 1
+            self._x = -1000  # Déplacer l'ennemi en dehors de l'écran
+            self._y = -1000  # Déplacer l'ennemi en dehors de l'écran
+            
             if objet_lache:
                 print(f"L'ennemi a lâché un(e) {objet_lache}.")
                 return objet_lache

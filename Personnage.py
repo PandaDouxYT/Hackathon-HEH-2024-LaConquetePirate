@@ -1,8 +1,8 @@
 class Personnage:
-    def __init__(self, nom, type):
+    def __init__(self, nom, type, degats):
         self._nom = nom
         self._vie = 95
-        self._degats = 0
+        self._degats = degats
         self._type = type
         self._position = (0 ,0)
         self._inventaire = []
