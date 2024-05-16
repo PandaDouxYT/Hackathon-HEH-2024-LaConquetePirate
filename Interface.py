@@ -11,6 +11,11 @@ from Audio import Audio
 
 class Interface:
     def __init__(self, window, idOfLoadedGame=None):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Initialisation de l'interface du jeu
+        """
         self.window = window
         self.font = pygame.font.Font(None, 36)
         self.idOfLoadedGame = idOfLoadedGame
@@ -67,12 +72,20 @@ class Interface:
         print("Interface initialisée")
 
     def save_volume(self):
-        """Enregistre la valeur du volume dans un fichier JSON"""
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Sauvegarde la valeur du volume dans un fichier JSON 
+        """
         with open("settings.json", "w") as f:
             json.dump({"volume": self.volume_level}, f)
 
     def load_volume(self):
-        """Charge la valeur du volume depuis un fichier JSON"""
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Charge la valeur du volume depuis un fichier JSON
+        """
         try:
             with open("settings.json", "r") as f:
                 settings = json.load(f)
@@ -81,6 +94,12 @@ class Interface:
             return 1.0  # Valeur par défaut si le fichier n'existe pas
     
     def charger_carte(self):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Charge la carte du jeu depuis un fichier JSON
+        """
+
         print("Chargement de la carte...")
         mesCarte = Carte(["map/carte1.json", "map/carte2.json"], self.niveauCarte)
         mapActuelle = mesCarte.charger_carte()
@@ -113,6 +132,11 @@ class Interface:
         return {"elements": elements}
 
     def draw(self):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Dessine l'interface du jeu
+        """
         if self.background_surface:
             self.window.blit(self.background_surface, (0, 0))
 
@@ -159,6 +183,11 @@ class Interface:
         pygame.display.update()
 
     def afficher_carte(self):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Affiche la carte du jeu
+        """
         elementCollision = ["mur", "sol"]
 
         for element_type, position, taille in self.carte["elements"]:
@@ -189,9 +218,23 @@ class Interface:
                 pygame.draw.rect(self.window, (100, 50, 0), pygame.Rect(position, taille_porte))
 
     def effacer_zone(self, x, y, width, height):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Efface une zone de la fenêtre
+        # x: position x de la zone à effacer
+        # y: position y de la zone à effacer
+        # width: largeur de la zone à effacer
+        # height: hauteur de la zone à effacer
+        """
         self.window.fill((73, 140, 255), (x, y, width, height))
     
     def run(self):
+        """
+        QUI: Anthony VERGEYLEN & Guillaume DUCHESNE
+        QUAND: 16-05-2024
+        QUOI: Lance l'interface du jeu
+        """
         interface_active = True
         while interface_active:
             self.clock.tick(60)
@@ -368,7 +411,10 @@ class Interface:
 
     def afficher_nombre_piece(self, nb_pieces=0):
         """
-        Affiche le nombre de pièces du joueur actif.
+        QUI: Anthony VERGEYLEN
+        QUAND: 13-05-2024
+        QUOI: Affiche le nombre de pièces du joueur actif
+        # nb_pieces: nombre de pièces du joueur actif
         """
         coin_img = pygame.image.load(os.path.join("assets", "img", "coin.png"))
         coin_width = coin_img.get_width()
@@ -393,7 +439,10 @@ class Interface:
 
     def afficher_nombre_level(self, level=0):
         """
-        Affiche le niveau du joueur actif.
+        QUI: Anthony VERGEYLEN
+        QUAND: 13-05-2024
+        QUOI: Affiche le niveau du joueur actif
+        # level: niveau du joueur actif
         """
         xp_img = pygame.image.load(os.path.join("assets", "img", "level.png"))
         xp_width = xp_img.get_width()
@@ -418,7 +467,10 @@ class Interface:
 
     def afficher_nombre_experience(self, xp=0):
         """
-        Affiche le nombre d'expérience du joueur actif.
+        QUI: Anthony VERGEYLEN
+        QUAND: 13-05-2024
+        QUOI: Affiche le nombre d'expérience du joueur actif
+        # xp: nombre d'expérience du joueur actif
         """
         text = self.font.render(str(xp), True, (255, 255, 255))
         text_width = text.get_width()
@@ -495,7 +547,9 @@ class Interface:
 
     def afficher_message_de_mort(self):
         """
-        Affiche un message de mort lorsque le joueur meurt.
+        QUI: Anthony VERGEYLEN
+        QUAND: 13-05-2024
+        QUOI: Affiche un message de mort et attend une entrée de l'utilisateur pour quitter le jeu
         """
 
         # couper la musique 
