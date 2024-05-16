@@ -7,6 +7,13 @@ class Audio:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Initialisation de la classe Audio
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
         """
         pygame.mixer.init()
         print("Audio initialisé")
@@ -24,7 +31,13 @@ class Audio:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Joue un son
-        # url: chemin du fichier son à jouer
+
+        Arguments:
+        - url: chemin du fichier son à jouer
+
+        Retourne:
+        - Pas de retour
+        
         """
         path = os.path.join("assets", "son", url)
         son = pygame.mixer.Sound(path)
@@ -39,8 +52,14 @@ class Audio:
         QUI: Anthony VERGEYLEN
         QUAND: 13-05-2024
         QUOI: Joue une musique d'ambiance
-        # url: chemin du fichier musique à jouer
-        # isLoop: True si la musique doit être jouée en boucle, False sinon
+
+        Arguments:
+        - url: chemin du fichier musique à jouer
+        - isLoop: True si la musique doit être jouée en boucle, False sinon
+
+        Retourne:
+        - Pas de retour
+
         """
         path = os.path.join("assets", "son", url)
         pygame.mixer.music.load(path)
@@ -54,6 +73,13 @@ class Audio:
         QUI: Anthony VERGEYLEN
         QUAND: 14-05-2024
         QUOI: Arrête la musique en cours
+
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
         """
         pygame.mixer.music.stop()
 
@@ -62,7 +88,13 @@ class Audio:
         QUI: Anthony VERGEYLEN
         QUAND: 15-05-2024
         QUOI: Définit le volume global
-        # volume: float entre 0.0 et 1.0
+
+        Arguments:
+        - volume: float (entre 0.0 et 1.0)
+
+        Retourne:
+        - Pas de retour
+
         """
         self.global_volume = volume
         pygame.mixer.music.set_volume(volume)
@@ -74,6 +106,12 @@ class Audio:
         QUI: Anthony VERGEYLEN
         QUAND: 15-05-2024
         QUOI: Obtient le volume global
-        # retourne: float entre 0.0 et 1.0
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - volume global (float)
+
         """
         return self.global_volume

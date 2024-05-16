@@ -152,6 +152,14 @@ class MenuPrincipal:
                     self.button_width,
                     self.button_height,
                 )
+                self.buttons[f"delete_{slot}"] = pygame.Rect(
+                    (self.window_width + self.button_width) // 2 + 20,
+                    start_y
+                    + (self.button_height + self.button_margin + self.button_spacing)
+                    * (i + 1),
+                    100,
+                    self.button_height,
+                )
 
         self.texts = {
             "play": self.font.render(
@@ -163,6 +171,9 @@ class MenuPrincipal:
         for slot in save_slots:
             self.texts[f"load_{slot}"] = self.font.render(
                 f"Charger la sauvegarde #{slot}", True, (255, 255, 255)
+            )
+            self.texts[f"delete_{slot}"] = self.font.render(
+                "-", True, (255, 255, 255)
             )
 
         self.button_clicked = False  # Initialize the button click state
@@ -303,6 +314,9 @@ class MenuPrincipal:
                             elif key.startswith("load_"):
                                 save_slot = key.split("_")[1]
                                 return f"load_{save_slot}"
+                            elif key.startswith("delete_"):
+                                save_slot = key.split("_")[1]
+                                return f"delete_{save_slot}"
                     if self.volume_rect.collidepoint(pos):
                         self.adjusting_volume = True
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -345,7 +359,6 @@ class MenuPrincipal:
                 menu_active = False
                 print("Lancement du jeu...")
 
-                # Laisser le son du clic se jouer
                 pygame.time.wait(600)
                 self.audio.stopMusic()
                 # set mouse to default
@@ -368,6 +381,16 @@ class MenuPrincipal:
                 # TODO: Load the save completely
                 interface = Interface(self.window, save_slot)
                 interface.run()
+            elif action and action.startswith("delete_"):
+                save_slot = action.split("_")[1]
+                with open("saves.json", "r") as f:
+                    save_slots = json.load(f)
+                if save_slot in save_slots:
+                    del save_slots[save_slot]
+                    with open("saves.json", "w") as f:
+                        json.dump(save_slots, f)
+                    print(f"Sauvegarde #{save_slot} supprimée")
+                self.__init__(self.window)  # Reinitialize the menu to refresh the slots
 
             pygame.time.wait(20)
             if (

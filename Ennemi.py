@@ -6,6 +6,23 @@ from Audio import Audio
 class Ennemi(Personnage):
     
     def __init__(self, nom, type, vie, degats, inventaire, schemaAttaque, x=0, y=0):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Constructeur de la classe Ennemi
+        
+        Arguments:
+        - nom: string
+        - type: string
+        - vie: int
+        - degats: int
+        - inventaire: list
+        - schemaAttaque: int
+
+        Retourne:
+        - Pas de retour
+
+        """
         super().__init__(nom, type, degats)
         self.__schemaAttaque = schemaAttaque
         self._x = x
@@ -45,6 +62,18 @@ class Ennemi(Personnage):
         self.dernier_attaque_temps = 0
 
     def resize_image(self, image):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Redimensionne une image
+        
+        Arguments:
+        - image: pygame.Surface
+
+        Retourne:
+        - pygame.Surface
+
+        """
         new_width = 100
         original_width, original_height = image.get_size()
         new_height = int((new_width / original_width) * original_height)
@@ -52,6 +81,19 @@ class Ennemi(Personnage):
 
     # Se rapprocher
     def deplacer(self, x, y):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Déplacer l'ennemi vers un point spécifique
+        
+        Arguments:
+        - x: int
+        - y: int
+
+        Retourne:
+        - Pas de retour
+
+        """
         if abs(x - self._x) < 145:
             self.deplacer_arreter()
         elif x > self._x:
@@ -66,16 +108,52 @@ class Ennemi(Personnage):
 
     # S'éloigner
     def deplacer_inverse(self, x):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Déplacer l'ennemi en sens inverse
+        
+        Arguments:
+        - x: int
+
+        Retourne:
+        - Pas de retour
+
+        """
         if x > self._x:
             self.deplacer_gauche()
         elif x < self._x:
             self.deplacer_droite()
 
     def deplacer_arreter(self):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Arrêter le déplacement de l'ennemi
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
+        """
         self._x += 0
         self.mettre_a_jour_position()
 
     def deplacer_gauche(self):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Déplacer l'ennemi vers la gauche
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
+        """
         self._x -= 3.5
         self.mettre_a_jour_position()
         if self._facing_right:
@@ -83,18 +161,52 @@ class Ennemi(Personnage):
         self.animer_marche()
 
     def deplacer_droite(self):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Déplacer l'ennemi vers la droite
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
+        """
         self._x += 3.5
         self.mettre_a_jour_position()
         if not self._facing_right:
             self.inverser_direction()
         self.animer_marche()
+
     def get_rect(self):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Retourne le rectangle de zone de collision de l'ennemi
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - self.rect (Rectangle de zone de collision)
+
+        """
         return self.rect
-    
-
-
 
     def comportement(self, joueur):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Définit le comportement de l'ennemi
+        
+        Arguments:
+        - joueur: Personnage
+
+        Retourne:
+        - peutAttaquerJoueur: bool
+
+        """
         peutAttaquerJoueur = False
         positionX, positionY = joueur.get_x_y
         distanceX = self.calculer_distance(positionX)
@@ -128,9 +240,34 @@ class Ennemi(Personnage):
     
     @property
     def get_x_y(self):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Retourne les coordonnées x et y de l'ennemi
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - self._x, self._y (int, int)
+
+        """
         return self._x, self._y
 
     def attaque(self, joueur, vieJoueur):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Permet à l'ennemi d'attaquer le joueur
+        
+        Arguments:
+        - joueur: Personnage
+        - vieJoueur: int
+
+        Retourne:
+        - newVieJoueur (int)
+
+        """
         currentVieJoueur = vieJoueur
         newVieJoueur = currentVieJoueur
 
@@ -158,6 +295,19 @@ class Ennemi(Personnage):
         return newVieJoueur
 
     def afficherPersonnage(self, x, y):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Affiche le personnage à l'écran
+        
+        Arguments:
+        - x: int
+        - y: int
+
+        Retourne:
+        - Pas de retour
+
+        """
         
         # Display the character without adjusting the y position
         self.window.blit(self._current_image, (x, y))
@@ -165,13 +315,34 @@ class Ennemi(Personnage):
         self.rect = pygame.Rect(x, y, self.width, self._character_height).inflate(-20, 5)
         self.rectDisplay = pygame.draw.rect(self.window, (255, 0, 0), (self.rect), 1)
 
-
-
     def mettre_a_jour_position(self):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Mettre à jour la position du personnage
+        
+        Arguments:
+
+        Retourne:
+        - Pas de retour
+
+        """
         self.afficherPersonnage(self._x, self._y)
 
 
     def verifier_mort(self):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Vérifie si l'ennemi est mort
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - objet_lache (Objet)
+
+        """
         if self._vie <= 0:
             objet_lache = Objet.lacher_objet(self)
             self._vie = 1
@@ -186,11 +357,35 @@ class Ennemi(Personnage):
                 return None
 
     def inverser_direction(self):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Inverser la direction du personnage
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
+        """
         self._facing_right = not self._facing_right
         self._current_image = pygame.transform.flip(self._current_image, True, False)
         self._move_images = [pygame.transform.flip(image, True, False) for image in self._move_images]
 
     def animer_marche(self):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Animer le personnage lorsqu'il marche
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
+        """
         current_time = pygame.time.get_ticks()
         if current_time - self._animation_time > self._animation_delay:
             self._animation_index = (self._animation_index + 1) % len(self._move_images)
@@ -198,10 +393,33 @@ class Ennemi(Personnage):
             self._animation_time = current_time
 
     def calculer_distance(self, opposant_pos):
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Calcule la distance entre l'ennemi et un autre personnage
+        
+        Arguments:
+        - opposant_pos: int
+
+        Retourne:
+        - Pas de retour
+
+        """
         return abs(opposant_pos - self._x)
     
     def load_volume(self):
-        """Charge la valeur du volume depuis un fichier JSON"""
+        """
+        QUI: Duchesne Guillaume & Anthony VERGEYLEN
+        QUAND: 16-05-2024
+        QUOI: Charge le volume global à partir du fichier settings.json
+        
+        Arguments:
+        - Pas d'arguments
+
+        Retourne:
+        - Pas de retour
+
+        """
         try:
             with open("settings.json", "r") as f:
                 settings = json.load(f)

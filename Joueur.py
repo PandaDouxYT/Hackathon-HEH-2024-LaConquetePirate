@@ -98,7 +98,12 @@ class Joueur:
         return self._personnage.get_position
 
     @property
-    def get_level(self):
+    def level(self):
+        return self._niveau
+    
+    @level.setter
+    def level(self, newLevel):
+        self._niveau = newLevel
         return self._niveau
 
     @property

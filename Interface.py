@@ -23,7 +23,6 @@ class Interface:
 
         self.niveauCarte = 2
 
-
         with open("map/carte"+str(self.niveauCarte)+".json", "r") as f:
             map_data = json.load(f)
 
@@ -43,7 +42,7 @@ class Interface:
                 for save_id, save_data in saves.items():
                     if save_id == str(idOfLoadedGame):
                         player_position = (save_data["player"]["position"]['x'], save_data["player"]["position"]['y'])
-                        print("Position du joueur:", player_position)
+                        # print("Position du joueur:", player_position)
                         self.vieJoueur = save_data["player"]["health"]
                         break
         else:
@@ -59,11 +58,15 @@ class Interface:
         ]
         personnageEnCours = personnage[0]
         self.joueurActif = Joueur(personnageEnCours, player_position[0] * 20, player_position[1] * 20 + 100, "")
-        
-
+        self.joueurActif.level = self.niveauCarte
 
         if not idOfLoadedGame:
             self.vieJoueur = self.joueurActif.get_vie
+            # set self.idOfLoadedGame to count + 1
+            if os.path.exists("saves.json"):
+                with open("saves.json", "r") as f:
+                    saves = json.load(f)
+                    self.idOfLoadedGame = len(saves) + 1
 
         for element in map_data['elements']:
             if element['type'] == 'ennemi':
@@ -73,20 +76,18 @@ class Interface:
         
         self.idOfActivePlayer = "1"
         self.ennemiActif = Ennemi("Vertigo", "courteDistance", 95, 20, [], 2, ennemi_position[0]*20, ennemi_position[1]*20)
-
+        # print("== ID:", self.idOfLoadedGame)
         self.pause_menu = PauseMenu(self.window, self.idOfLoadedGame, self.joueurActif)
-
 
         self.xpJoueur = self.joueurActif.get_xp
         self.pieceJoueur = self.joueurActif.get_piece
-        self.levelJoueur = self.joueurActif.get_level
 
         self.keys = {'left': False, 'right': False}
         self.clock = pygame.time.Clock()
         self.background_surface = None
         self.carte = self.charger_carte()
         print("Carte chargée...")
-        print(self.carte)
+        # print(self.carte)
         print("Interface initialisée")
 
     def save_volume(self):
@@ -121,7 +122,6 @@ class Interface:
         print("Chargement de la carte...")
         mesCarte = Carte(["map/carte1.json", "map/carte2.json"], self.niveauCarte)
         mapActuelle = mesCarte.charger_carte()
-        print("Carte chargée...")
 
         taille_case = 20  # Taille d'une case en pixels
 
@@ -164,7 +164,7 @@ class Interface:
         self.afficher_barre_vie(self.vieJoueur)
         self.afficher_nombre_piece(self.pieceJoueur)
         self.afficher_nombre_experience(self.xpJoueur)
-        self.afficher_nombre_level(self.levelJoueur)
+        self.afficher_nombre_level(self.joueurActif.level)
         self.afficher_barre_vie_ennemi("Vertigo", 100)
 
         # Affichage du personnage joueur
@@ -196,6 +196,7 @@ class Interface:
                     json.dump({}, f)
             with open("saves.json", "r") as f:
                 currentlySaves = json.load(f)
+                print("Ton id de sauvegarde est: ", len(currentlySaves) + 1)
                 self.idOfLoadedGame = len(currentlySaves) + 1
         
         pygame.display.update()
@@ -216,8 +217,7 @@ class Interface:
                 #     pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
                 pass
             elif element_type == "piece":
-                # draw coin.png at position
-                coin_img = pygame.image.load(os.path.join("assets", "img", "coin.png"))
+                coin_img = pygame.image.load(os.path.join("assets", "img", "cle.png"))
                 coin_img = pygame.transform.scale(coin_img, (taille[0], taille[1]))
                 self.window.blit(coin_img, position)
             elif element_type == "piege":
@@ -322,6 +322,7 @@ class Interface:
                     exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        # print("le id de map esr", self.niveauCarte)
                         self.pause_menu.run()
                     elif event.key == pygame.K_q:
                         self.keys['left'] = True
@@ -565,6 +566,29 @@ class Interface:
         
         # Afficher le nom de l'ennemi
         self.window.blit(text, (text_x, text_y))
+
+    def afficher_objet(self):
+        """
+        QUI: Duchesne Guillaume
+        QUAND: 16-05-2024
+        QUOI: Affiche l'objet actif du joueur
+        """
+        if self.__monObjet is not None:
+            try:
+                # Construire le chemin de l'image de l'objet
+                monObjet = self.__monObjet[0] + ".png"
+                chemin_image = os.path.join("assets", "img", monObjet)
+
+                # Charger l'image de l'objet
+                objet_img = pygame.image.load(chemin_image)
+                objet_img = pygame.transform.scale(objet_img, (200, 100))
+
+                objet_x = 100
+                objet_y = 200
+
+                self.window.blit(objet_img, (objet_x, objet_y))
+            except pygame.error as e:
+                print(f"Erreur lors du chargement de l'image {chemin_image}: {e}")
 
     def afficher_message_de_mort(self):
         """

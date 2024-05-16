@@ -10,8 +10,10 @@ class PauseMenu:
         QUAND: 14-05-2024
         QUOI: Initialisation du menu de pause
         """
-        self.audio = Audio()
         self.idOfLoadedGame = idOfLoadedGame
+        # print("== ID2:" , idOfLoadedGame)
+
+        self.audio = Audio()
         self.joueurActif = joueurActif
         self.maxSaves = 3
         self.volume_level = self.load_volume()
@@ -253,12 +255,14 @@ class PauseMenu:
             "%d-%m-%Y %H:%M"
         )
 
+        # print("l'id est: ", self.idOfLoadedGame)
+
         if str(self.idOfLoadedGame) in currentlySaves:
             del currentlySaves[str(self.idOfLoadedGame)]
 
         currentlySaves[self.idOfLoadedGame] = {
             "time": currentDateTime,
-            "level": self.joueurActif.get_level,
+            "level": self.joueurActif.level,
             "player": {
                 "position": {
                     "x": self.joueurActif._x/20,

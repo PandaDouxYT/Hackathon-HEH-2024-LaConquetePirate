@@ -1,30 +1,28 @@
 import pygame, random
 
 class Objet:
+    """
+    Classe Objet
+
+    permet de créer un type d'objet spécifique
+    """
     def __init__(self, nom, type):
         self.__nom = nom
         self.__type = type
-        self.__images = {
-            "chapeau": "assets/img/chapeau.png",
-            "cle": "assets/img/cle.png",
-            "coeur": "assets/img/coeur.png",
-            "bottes": "assets/img/bottes.png",
-            "vin": "assets/img/vin.png",
-            "epee": "assets/img/epee.png",
-            "hache": "assets/img/hache.png",
-            "arc": "assets/img/arc.png"
-        }
-        self.__loaded_images = {key: pygame.image.load(val) for key, val in self.__images.items()}
     
     @property
     def type(self):
         return self.__type
-    
-    @type.setter
-    def type(self, valeur):
-        self.__type = valeur
+
 
     def UtiliserObjet(self, joueur):
+        """
+        Permet d'utiliser un objet spécifique
+
+        paramètre : l'instance joueur
+
+        retourné : aucun
+        """
         if self.__nom == "coeur":
             joueur.modifier_vie(50)
         elif self.__nom == "vin":
@@ -35,11 +33,16 @@ class Objet:
             joueur.equipe_arme(self.__nom)
 
     def lacher_objet(self):
-        objets_possibles = ['chapeau', 'cle', 'coeur', 'bottes', 'vin', 'epee', 'hache', 'arc']
-        if random.random() < 0.25:  # 25% de chance de lâcher un objet
-            objet_lache = random.choice(objets_possibles)
-            print(f"L'ennemi a lâché un(e) {objet_lache}.")
-            return objet_lache
-        else:
-            print("L'ennemi n'a rien lâché.")
-            return None
+        """
+        Permet de choisir un objet a lâcher
+
+        paramètre : aucun
+
+        retourné : l'objet qui a été choisi à lacher.
+        """
+    
+        objets_possibles = ['sword1', 'steak', 'piques']
+        objetLache = random.choice(objets_possibles)
+        print(f"L'ennemi a lâché un(e) {objetLache}")
+        return objetLache
+        
