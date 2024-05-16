@@ -16,7 +16,7 @@ class Interface:
         self.idOfLoadedGame = idOfLoadedGame
         self.last_trap_time = 0  # Initialize the last trap interaction time to 0
 
-        self.niveauCarte = 1
+        self.niveauCarte = 2
 
         with open("map/carte"+str(self.niveauCarte)+".json", "r") as f:
             map_data = json.load(f)
@@ -49,8 +49,7 @@ class Interface:
         self.joueurActif = Joueur(personnageEnCours, player_position[0] * 20, player_position[1] * 20 + 100)
         
         self.idOfActivePlayer = "1"
-        self.ennemiActif = Ennemi("Vertigo", "longueDistance", 95, 20, [], 0, ennemi_position[0]*20, ennemi_position[1]*20)
-
+        self.ennemiActif = Ennemi("Vertigo", "courteDistance", 95, 20, [], 2, ennemi_position[0]*20, ennemi_position[1]*20)
 
         self.vieJoueur = self.joueurActif.get_vie
         self.xpJoueur = self.joueurActif.get_xp
@@ -123,8 +122,16 @@ class Interface:
         self.afficher_nombre_experience(self.xpJoueur)
         self.afficher_nombre_level(self.levelJoueur)
         self.afficher_barre_vie_ennemi("Vertigo", 100)
-        self.attaquer = self.ennemiActif.comportement(self.joueurActif)
+
+        # Affichage du personnage joueur
         self.joueurActif.mettre_a_jour_position()
+
+        # Affichage de l'ennemi
+        self.ennemiActif.mettre_a_jour_position()
+
+        # Mise à jour de la vie du joueur après l'attaque
+        self.vieJoueur = self.ennemiActif.attaque(self.joueurActif, self.vieJoueur)
+        self.ennemiActif.deplacer(self.joueurActif._x, self.joueurActif._y)
 
         if self.idOfLoadedGame:
             fontCredits = pygame.font.SysFont(None, 20)
@@ -151,10 +158,10 @@ class Interface:
 
         for element_type, position, taille in self.carte["elements"]:
             if element_type in elementCollision:
-                if element_type == "mur":
-                    pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
-                elif element_type == "sol":
-                    pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
+                # if element_type == "mur":
+                #     pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
+                # elif element_type == "sol":
+                #     pygame.draw.rect(self.window, (0, 0, 0), pygame.Rect(position, taille))
                 pass
             elif element_type == "piece":
                 # draw coin.png at position
@@ -183,6 +190,19 @@ class Interface:
         interface_active = True
         while interface_active:
             self.clock.tick(60)
+            
+            ennemi_rect = self.ennemiActif.get_rect()
+
+            for element_type, position, taille in self.carte["elements"]:
+                element_rect = pygame.Rect(position, taille)
+
+                if element_type in ["mur"] and ennemi_rect.colliderect(element_rect):
+                    # print("collision avec un mur" + str(self.ennemiActif._facing_right))
+                    if not self.ennemiActif._facing_right:
+                        self.ennemiActif._x = element_rect.right
+                    else:
+                        self.ennemiActif._x = element_rect.left - ennemi_rect.width - 10
+
             player_rect = self.joueurActif.get_rect()
 
             for element_type, position, taille in self.carte["elements"]:
@@ -192,7 +212,7 @@ class Interface:
                     if self.keys['left']:
                         self.joueurActif._x = element_rect.right
                     elif self.keys['right']:
-                        self.joueurActif._x = element_rect.left - player_rect.width
+                        self.joueurActif._x = element_rect.left - player_rect.width - 10
                 if element_type in ["sol"] and player_rect.colliderect(element_rect):
                     yOfSol = element_rect.top
                     self.joueurActif._y = yOfSol
@@ -210,7 +230,6 @@ class Interface:
                 if element_type in ["piege"] and player_rect.colliderect(element_rect):
                     current_time = time.time()
                     if current_time - self.last_trap_time >= 1.2:  # Check if 1.2 seconds have passed
-                        print("tu t'es pris un piege")
                         self.vieJoueur -= 10
 
                         self.last_trap_time = current_time
@@ -477,6 +496,14 @@ class Interface:
         Affiche un message de mort lorsque le joueur meurt.
         """
 
+        # couper la musique 
+        self.audio.stopMusic()
+        # mettre le son a fond
+        self.audio.set_global_volume(1.0)
+        # wait 400 ms
+        time.sleep(1)
+        self.audio.jouerSon("death.mp3")
+
         # Draw a semi-transparent overlay
         overlay = pygame.Surface((self.window.get_width(), self.window.get_height()))
         overlay.set_alpha(200)  # Set transparency level
@@ -511,4 +538,3 @@ class Interface:
                     waiting = False
                     pygame.quit()
                     exit()
-

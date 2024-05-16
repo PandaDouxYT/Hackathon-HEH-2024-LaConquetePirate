@@ -1,5 +1,4 @@
 import pygame
-import time
 
 class Joueur:
     def __init__(self, personnage, xJoueur, yJoueur, vie=100, inventaire=[], xp=10, niveau=0, piece=0):
@@ -152,11 +151,11 @@ class Joueur:
 
     def Attaquer(self, ennemi):
         distance = self.calculer_distance(ennemi._position)
-
         if self._type == "longueDistance":
             if distance >= 10:
                 if 'arc' in self.__inventaire:
                     ennemi._vie -= 2 * self._degats
+
                 else:
                     ennemi._vie -= self._degats
         elif self._type == "midDistance":
