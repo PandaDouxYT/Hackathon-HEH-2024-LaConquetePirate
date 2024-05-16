@@ -17,7 +17,9 @@ class Interface:
         self.idOfLoadedGame = idOfLoadedGame
         self.last_trap_time = 0
 
-        self.niveauCarte = 2
+        # LE NIVEAU DE LA CARTE
+        # CHANGEMENT DE CARTE NON IMPLEMENTE
+        self.niveauCarte = 1
 
         with open("map/carte"+str(self.niveauCarte)+".json", "r") as f:
             map_data = json.load(f)
@@ -250,6 +252,12 @@ class Interface:
 
                         self.audio.jouerSon("supermariocoin.mp3")
                         self.carte["elements"].remove((element_type, position, taille))
+
+                        
+                        # TODO: FAIRE LE CHANGEMENT DE MAP ICI
+                        self.niveauCarte = 2
+                        
+                        self.afficher_message_de_victoire()
 
             if self.vieJoueur <= 0:
                 self.joueurActif.set_vie(0)
